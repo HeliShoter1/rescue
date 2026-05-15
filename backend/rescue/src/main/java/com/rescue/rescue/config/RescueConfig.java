@@ -36,11 +36,12 @@ public class RescueConfig {
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     private static final List<String> SECURED_URLS = List.of(
-      
+      "/api/v1/users/**"
     );
 
     private static final List<String> PUBLIC_URLS = List.of(
-        "/api/v1/**"
+        "/api/v1/user/register",
+        "/api/v1/auth/login"
     );
 
     @Bean

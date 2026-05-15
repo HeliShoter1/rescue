@@ -1,0 +1,49 @@
+package com.rescue.rescue.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.rescue.rescue.dto.RelativeDto;
+import com.rescue.rescue.reponse.ApiResponse;
+import com.rescue.rescue.request.CreateRelative;
+import com.rescue.rescue.service.Relative.IRelativeService;
+
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("${api.prefix}/auth")
+public class RelativeController {
+    private final IRelativeService relativeService;
+
+    @GetMapping("/getListRelative")
+    public ResponseEntity<ApiResponse> getAllRelative(
+        @RequestParam(value = "cursor",defaultValue = "0") Long Cursor,
+        @RequestParam(value = "limit",defaultValue = "10") Integer limit) {
+        List<RelativeDto> relatives = relativeService.getRelativesByUserId(0L, 10);
+        return ResponseEntity.ok(new ApiResponse("success", relatives));
+    }
+
+    @PostMapping("/addRelative")
+    public ResponseEntity<ApiResponse> addRelative(@RequestBody CreateRelative relative) {
+        //TODO: process POST request
+        RelativeDto createdRelative = relativeService.createRelative(relative);
+        return ResponseEntity.ok(new ApiResponse("success", createdRelative));
+    }
+    @Delete("/deleteRelative/{id}")
+    public ResponseEntity<ApiResponse> deleteRelative(@RequestParam Long id) {
+        relativeService.deleteRelative(id);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+}

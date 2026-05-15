@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.One;
+
 @Entity
 @Table(name = "places")
 @Getter
@@ -26,6 +28,9 @@ public class Place {
 
     @Column(name = "name")
     private String name;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
 
     @OneToMany(mappedBy = "place")
     private List<Post> posts;

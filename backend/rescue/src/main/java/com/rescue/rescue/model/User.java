@@ -52,6 +52,10 @@ public class User {
     @Column(name = "password_changed_at")
     private LocalDate passwordChangedAt = LocalDate.now();
 
+    @OneToOne
+    @JoinColumn(name = "id_place")
+    private Place place;
+
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
 
