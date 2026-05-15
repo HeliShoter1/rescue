@@ -45,10 +45,11 @@ public class UserController {
     public ResponseEntity<ApiResponse> getAllUsers(
                             @RequestParam (value = "status", required = false) UserStatus status,
                             @RequestParam (value = "role", required = false) UserRole role,
+                            @RequestParam(value="search", required = false) String search,
                             @RequestParam(value="cursor",required = true, defaultValue = "0") Long cursor,
                             @RequestParam(value="limit",required = true,defaultValue = "10") Integer limit) {
         // Implementation for fetching all users
-        List<UserDto> users = userService.getAllUsers(status, role, cursor, limit);
+        List<UserDto> users = userService.getAllUsers(status, role, search, cursor, limit);
         return ResponseEntity.ok(new ApiResponse("success", users));
     }
 

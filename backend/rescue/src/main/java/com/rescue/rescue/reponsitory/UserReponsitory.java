@@ -22,13 +22,15 @@ public interface UserReponsitory extends JpaRepository<User, Long> {
         FROM User u 
         WHERE (:status IS NULL OR u.status = :status) 
         AND (:role IS NULL OR u.role = :role)
-        AND id >= :cursor 
-        order by id asc
-        limit :limit
+        AND (:search IS NULL OR u.name LIKE %:search% OR u.phoneNumber LIKE %:search%)
+        AND u.id >= :cursor 
+        ORDER BY u.id ASC
+        LIMIT :limit
     """)
     List<User> findByFilter(
         @Param("status") UserStatus status,
-        @Param("role") UserRole role, 
-        @Param("cursor") Long cursor, 
+        @Param("role") UserRole role,
+        @Param("search") String search,
+        @Param("cursor") Long cursor,
         @Param("limit") Integer limit);
 }

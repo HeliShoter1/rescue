@@ -12,7 +12,7 @@ import com.rescue.rescue.request.UserUpdateRole;
 import com.rescue.rescue.request.UserUpdateStatus;
 
 public interface IUserService {
-    List<UserDto> getAllUsers(UserStatus status, UserRole role, Long cursor, Integer limit);
+    List<UserDto> getAllUsers(UserStatus status, UserRole role, String search, Long cursor, Integer limit);
     UserDto getUserById(Long id);
     UserDto getUserByPhoneNumber(String phoneNumber);
     UserDto createUser(CreateUserRequest userRequest);

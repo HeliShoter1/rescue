@@ -34,10 +34,11 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserDto> getAllUsers(UserStatus status, UserRole role, Long cursor, Integer limit) {
+    public List<UserDto> getAllUsers(UserStatus status, UserRole role, String search, Long cursor, Integer limit) {
         List<User> users = userRepository.findByFilter(
             status != null ? status : null,
             role != null ? role : null,
+            search != null ? search : null,
             cursor != null ? cursor : 0L,
             limit != null ? limit : 10
         );
