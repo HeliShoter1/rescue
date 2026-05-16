@@ -38,10 +38,6 @@ public class Post {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "id_place", nullable = false)
-    private Place place;
-
     @OneToMany(mappedBy = "post")
     private List<History> histories;
 }

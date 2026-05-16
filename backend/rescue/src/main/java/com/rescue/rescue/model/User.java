@@ -52,7 +52,7 @@ public class User {
     @Column(name = "password_changed_at")
     private LocalDate passwordChangedAt = LocalDate.now();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_place")
     private Place place;
 

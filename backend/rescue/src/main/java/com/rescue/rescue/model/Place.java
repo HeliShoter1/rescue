@@ -29,11 +29,8 @@ public class Place {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "place", fetch = FetchType.LAZY)
     private User user;
-
-    @OneToMany(mappedBy = "place")
-    private List<Post> posts;
 
     @OneToMany(mappedBy = "place")
     private List<RescueTeam> rescueTeams;

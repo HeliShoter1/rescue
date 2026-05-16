@@ -14,6 +14,8 @@ import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.model.User;
 
+
+@Transactional(propagation = Propagation.MANDATORY)
 public interface UserReponsitory extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
 
