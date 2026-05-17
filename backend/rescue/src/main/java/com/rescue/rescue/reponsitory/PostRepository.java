@@ -15,6 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         ORDER BY p.id ASC
         limit :limit
     """)
-    List<Post> getAllPost(Long Cursor, Integer cursor, Integer limit);
+    List<Post> getAllPost(Long cursor, Integer limit);
 
 }
