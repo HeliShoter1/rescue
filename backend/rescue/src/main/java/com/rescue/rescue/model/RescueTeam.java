@@ -17,6 +17,10 @@ public class RescueTeam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @OneToOne
+    @JoinColumn(name = "victim_id", nullable = false)
+    private User victim;
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
@@ -26,7 +30,4 @@ public class RescueTeam {
     @Column(name = "status", nullable = false)
     private RescueTeamStatus status = RescueTeamStatus.AVAILABLE;
 
-    @ManyToOne
-    @JoinColumn(name = "id_place", nullable = false)
-    private Place place;
 }

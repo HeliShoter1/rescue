@@ -32,6 +32,4 @@ public class Place {
     @OneToOne(mappedBy = "place", fetch = FetchType.LAZY)
     private User user;
 
-    @OneToMany(mappedBy = "place")
-    private List<RescueTeam> rescueTeams;
 }
