@@ -68,6 +68,5 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
 
-    @OneToOne(mappedBy = "victim", fetch = FetchType.LAZY)
-    private RescueTeam rescueTeam;
+
 }

@@ -17,10 +17,6 @@ public class RescueTeam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @OneToOne
-    @JoinColumn(name = "victim_id", nullable = false)
-    private User victim;
 
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)

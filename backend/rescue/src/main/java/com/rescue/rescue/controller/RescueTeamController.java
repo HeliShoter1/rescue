@@ -1,0 +1,55 @@
+package com.rescue.rescue.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.rescue.rescue.reponse.ApiResponse;
+import com.rescue.rescue.request.CreateRescueTeamRequest;
+import com.rescue.rescue.request.UpdateRescueTeamRequest;
+import com.rescue.rescue.service.RescueTeam.IRescueTeamService;
+
+import lombok.AllArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
+
+
+@RestController
+@RequestMapping("${api.prefix}/rescue-teams")
+@AllArgsConstructor
+public class RescueTeamController {
+    private final IRescueTeamService rescueTeamService;
+
+    @GetMapping("/rescue-team/{id}")
+    public ResponseEntity<ApiResponse> getMethodName(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getRescueTeamById(id)));
+    }
+
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<ApiResponse> getRescueTeamByPostId(@PathVariable Long postId) {
+        return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getRescueTeamByPostId(postId)));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse> postMethodName(@RequestBody CreateRescueTeamRequest entity) {
+        //TODO: process POST request
+        rescueTeamService.createRescueTeam(entity);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+
+    @PutMapping("/update/")
+    public ResponseEntity<ApiResponse> putMethodName( @RequestBody UpdateRescueTeamRequest entity) {
+        //TODO: process PUT request
+        rescueTeamService.updateRescueTeam(entity);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+    
+    
+}
