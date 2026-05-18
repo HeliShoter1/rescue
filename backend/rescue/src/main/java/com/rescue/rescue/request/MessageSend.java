@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Data
 public class MessageSend {
-    private Long sender_id;
-    private Long receiver_id;
+    private Long senderId;
+    private Long receiverId;
     private String content;
     
 }
