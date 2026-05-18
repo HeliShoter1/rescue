@@ -16,7 +16,6 @@ public class PlaceDto {
     private String name;
     private Double latitude;
     private Double longitude;
-    private UserDto user;
 
     public static PlaceDto fromEntity(Place place) {
         return PlaceDto.builder()
@@ -24,7 +23,6 @@ public class PlaceDto {
                 .name(place.getName())
                 .latitude(place.getLatitude())
                 .longitude(place.getLongitude())
-                .user(UserDto.fromEntity(place.getUser()))
                 .build();
         }
 }
