@@ -15,7 +15,9 @@ import com.rescue.rescue.reponse.ApiResponse;
 import com.rescue.rescue.reponse.JwtResponse;
 import com.rescue.rescue.request.LoginRequest;
 import com.rescue.rescue.sercurity.jwt.JwtUtils;
+import com.rescue.rescue.sercurity.jwt.OnlineStatusInterceptor;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
+import com.rescue.rescue.service.OnlineStatusService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final OnlineStatusService onlineStatusService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest request) {
@@ -36,6 +39,7 @@ public class AuthController {
             String jwt = jwtUtils.generateTokenForUser(authentication);
             RescueUserDetail userDetail = (RescueUserDetail) authentication.getPrincipal();
             JwtResponse jwtResponse = new JwtResponse(userDetail.getId(), jwt);
+            onlineStatusService.setOnline(userDetail.getId());
             return ResponseEntity.ok(new ApiResponse("login successful", jwtResponse));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(e.getMessage(),null));
