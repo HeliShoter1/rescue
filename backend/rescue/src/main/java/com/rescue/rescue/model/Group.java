@@ -23,4 +23,9 @@ public class Group {
     @ManyToOne
     @JoinColumn(name = "rescue_id", nullable = false)
     private RescueTeam rescueTeam;
+
+    public Group orElseThrow(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 }

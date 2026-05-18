@@ -55,8 +55,11 @@ public class PostService implements IPostService {
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + post.getId()));
 
         RescueTeam rescueTeam = rescueTeamRepository.findByPostId(post.getId());
-        User group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeam.getId());
-        UserRole userRole = (group != null) ? group.getRole() : null;
+        User user = groupRepository
+                    .findByUserIdAndRescueTeamId(userId, rescueTeam.getId())
+                    .map(Group::getUser)
+                    .orElseThrow(() -> new RuntimeException("User not found"));;
+        UserRole userRole = (user != null) ? user.getRole() : null;
 
         boolean isOwner   = userId.equals(postEntity.getUser().getId());
         boolean isAdmin   = postEntity.getUser().getRole() == UserRole.ADMIN;
