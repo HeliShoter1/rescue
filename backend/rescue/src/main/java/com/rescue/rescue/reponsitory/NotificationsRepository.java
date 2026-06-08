@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rescue.rescue.model.Notification;
 
-@Transactional(propagation = Propagation.MANDATORY)
 public interface NotificationsRepository extends JpaRepository<Notification, Long> {
     @Query("""
         SELECT n 

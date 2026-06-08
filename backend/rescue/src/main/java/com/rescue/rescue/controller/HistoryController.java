@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class HistoryController {
     private final IHistoryService historyService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all-history")
     public ResponseEntity<ApiResponse> getAllHistory(@RequestParam(value="cursor",required = true, defaultValue = "0") Long cursor,
                                                     @RequestParam(value="limit",required = true,defaultValue = "10") Integer limit) {
@@ -42,6 +42,11 @@ public class HistoryController {
     public ResponseEntity<ApiResponse> getHistory() {
         return ResponseEntity.ok(new ApiResponse("success", historyService.GetById()));
     }
+
+    // @PostMapping("/{id}/create-history")
+    // public ResponseEntity<ApiResponse> createHistory(@PathVariable Long id) {
+    //     return ResponseEntity.ok(new ApiResponse("success", historyService.CreateHistory(id)));
+    // }
     
     @PutMapping("/history/{id}")
     public ResponseEntity<ApiResponse> putMethodName(@PathVariable Long id, @RequestBody HistoryStatus entity) {

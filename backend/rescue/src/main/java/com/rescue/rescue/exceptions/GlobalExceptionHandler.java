@@ -19,14 +19,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Xử lý tất cả BaseException và các class con
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<Map<String, Object>> handleBaseException(
             BaseException ex, HttpServletRequest request) {
         return buildResponse(ex.getStatus(), ex.getErrorCode(), ex.getMessage(), request.getRequestURI());
     }
 
-    // Xử lý lỗi validation (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -38,7 +36,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", message, request.getRequestURI());
     }
 
-    // Xử lý lỗi không xác định
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception ex, HttpServletRequest request) {
@@ -62,5 +59,11 @@ public class GlobalExceptionHandler {
         body.put("message", message);
         body.put("path", path);
         return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<Map<String, Object>> handleSecurityException(
+            SecurityException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.FORBIDDEN, "FORBIDDEN", ex.getMessage(), request.getRequestURI());
     }
 }

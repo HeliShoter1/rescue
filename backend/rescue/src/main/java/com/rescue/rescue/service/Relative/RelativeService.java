@@ -5,10 +5,13 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.RelativeDto;
+import com.rescue.rescue.enums.RelationshipType;
 import com.rescue.rescue.model.Relative;
+import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.RelativeReponsitory;
 import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreateRelative;
@@ -32,33 +35,51 @@ public class RelativeService implements IRelativeService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         return relativeRepository.findByUserId(userId, cursor, limit).stream()
-                .map(relative -> modelMapper.map(relative, RelativeDto.class))
+                .map(RelativeDto::fromEntity)
                 .toList();
     }
 
-    @Override
-public RelativeDto createRelative(CreateRelative relativeDto) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
-    
-    Relative relative = modelMapper.map(relativeDto, Relative.class);
-    relative.setUser(userRepository.findById(userId).orElse(null));
-    RelativeDto saved = modelMapper.map(relativeRepository.save(relative), RelativeDto.class);
+   @Override
+    public RelativeDto createRelative(CreateRelative relativeDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
 
-    // Push notification đến người được thêm vào
-    notificationService.sendNotification(
-            relativeDto.getRelativeId(),
-            "Thêm người thân",
-            "Bạn vừa được thêm vào danh sách người thân"
-    );
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User relativeUser = userRepository.findById(relativeDto.getRelativeId())
+                .orElseThrow(() -> new UsernameNotFoundException("Relative user not found"));
 
-    return saved;
-}
+        Relative relative = Relative.builder()
+                .user(user)
+                .relative(relativeUser)
+                .relationship(RelationshipType.valueOf(relativeDto.getRelationship()))
+                .build();
+
+        RelativeDto saved = RelativeDto.fromEntity(relativeRepository.save(relative));
+
+        notificationService.sendNotification(
+                relative.getRelative().getId(),
+                "Thêm người thân",
+                "Bạn vừa được thêm vào danh sách người thân"
+        );
+
+        return saved;
+    }
 
     @Override
     public void deleteRelative(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         Relative relative = relativeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Relative not found with id: " + id));
+                .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + id));
+        if (!relative.getUser().getId().equals(userId) && !relative.getRelative().getId().equals(userId)) {
+            throw new SecurityException("You do not have permission to delete this relative");
+        }
         relativeRepository.deleteById(id);
+        notificationService.sendNotification(
+                relative.getRelative().getId(),
+                "Xóa người thân",
+                "Bạn vừa bị xóa khỏi danh sách người thân"
+        );
     }    
 }

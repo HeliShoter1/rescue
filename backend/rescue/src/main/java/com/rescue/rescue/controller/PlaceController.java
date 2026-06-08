@@ -34,7 +34,6 @@ public class PlaceController {
 
     @PostMapping("/create-place")
     public ResponseEntity<ApiResponse> postMethodName(@RequestBody CreatePlace entity) {
-        //TODO: process POST request
         PlaceDto placeDto = placeService.createPlace(entity);
         return ResponseEntity.ok(new ApiResponse("Place created", placeDto));
     }

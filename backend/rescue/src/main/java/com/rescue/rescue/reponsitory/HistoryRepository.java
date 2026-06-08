@@ -11,6 +11,6 @@ public interface HistoryRepository extends JpaRepository<History, Long> {
     @Query("SELECT h FROM History h WHERE h.id < :cursor ORDER BY h.id DESC")
     List<History> GetAllByAdmin(Long cursor, Integer limit);
 
-    @Query("SELECT h FROM History h WHERE h.post.user.userID = :userId AND h.id < :cursor ORDER BY h.id DESC")
+    @Query("SELECT h FROM History h WHERE h.post.user.id = :userId AND h.id < :cursor ORDER BY h.id DESC")
     List<History> GetAllByUserId(Long userId, Long cursor, Integer limit);
 }

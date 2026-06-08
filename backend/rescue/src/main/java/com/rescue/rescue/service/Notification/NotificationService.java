@@ -33,7 +33,6 @@ public class NotificationService implements INotificationService {
         notification.setCreateAt(LocalDate.now());
         notificationRepository.save(notification);
 
-        // Chỉ push WebSocket nếu online
         if (webSocketEventListener.isOnline(userId)) {
             messagingTemplate.convertAndSendToUser(
                     userId.toString(),

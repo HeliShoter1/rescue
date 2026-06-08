@@ -46,8 +46,8 @@ public class PostController {
     @PutMapping("/UpdatePost")
     public ResponseEntity<ApiResponse> putMethodName(@RequestBody UpdatePost post) {
         //TODO: process PUT request
-        postService.updatePost(post);
-        return ResponseEntity.ok(new ApiResponse("success", null));
+        PostDto postDto = postService.updatePost(post);
+        return ResponseEntity.ok(new ApiResponse("success", postDto));
     }
     
     

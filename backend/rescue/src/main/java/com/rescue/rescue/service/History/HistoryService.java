@@ -56,6 +56,17 @@ public class HistoryService implements IHistoryService {
         return historyDto;
     }
 
+    // @Override
+    // public HistoryDto CreateHistory(Long id) {
+    //     // TODO Auto-generated method stub
+    //     History history = History.builder()
+    //             .userId(id)
+    //             .status(HistoryStatus.PENDING)
+    //             .build();
+    //     History savedHistory = historyRepository.save(history);
+    //     return HistoryDto.fromEntity(savedHistory);
+    // }
+
     @Override
     public HistoryDto UpdateStatus(Long id, HistoryStatus status) {
         // TODO Auto-generated method stub

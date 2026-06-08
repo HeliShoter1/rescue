@@ -3,6 +3,7 @@ package com.rescue.rescue.config;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,15 +35,24 @@ import lombok.RequiredArgsConstructor;
 public class RescueConfig {
     private final RescueUserDetailService rescueUserDetailService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    
+    @Value("${api.prefix}")
+    private String apiPrefix;
 
-    private static final List<String> SECURED_URLS = List.of(
-      "/api/v1/users/**"
-    );
+    private List<String> securedUrls() {
+        return List.of(
+            apiPrefix + "/users/**",
+            apiPrefix + "/posts/**"
+        );
+    }
 
-    private static final List<String> PUBLIC_URLS = List.of(
-        "/api/v1/user/register",
-        "/api/v1/auth/login"
-    );
+    private List<String> publicUrls() {
+        return List.of(
+            apiPrefix + "/users/register",
+            apiPrefix + "/auth/login",
+            apiPrefix + "/post/allPost"
+        );
+    }
 
     @Bean
     public ModelMapper modelMapper() {
@@ -80,8 +90,8 @@ public class RescueConfig {
                 .authorizeHttpRequests(
                     auth -> 
                         auth
-                        .requestMatchers(PUBLIC_URLS.toArray(String[]::new)).permitAll()
-                        .requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
+                        .requestMatchers(publicUrls().toArray(String[]::new)).permitAll()
+                        .requestMatchers(securedUrls().toArray(String[]::new)).authenticated()
                         .anyRequest().permitAll());
         http.authenticationProvider(daoAuthenticationProvider());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -94,7 +104,7 @@ public class RescueConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**") // Apply to all endpoints
-                        .allowedOrigins("http://localhost:5173") // Allow this origin
+                        .allowedOrigins("http://localhost:5500") // Allow this origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allow these HTTP methods
                         .allowedHeaders("*") // Allow all headers
                         .allowCredentials(true); // Allow credentials

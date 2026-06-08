@@ -11,6 +11,7 @@ import com.rescue.rescue.service.RescueTeam.IRescueTeamService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,13 +38,14 @@ public class RescueTeamController {
         return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getRescueTeamByPostId(postId)));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> postMethodName(@RequestBody CreateRescueTeamRequest entity) {
         //TODO: process POST request
-        rescueTeamService.createRescueTeam(entity);
-        return ResponseEntity.ok(new ApiResponse("success", null));
+        return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.createRescueTeam(entity)));
     }
 
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @PutMapping("/update/")
     public ResponseEntity<ApiResponse> putMethodName( @RequestBody UpdateRescueTeamRequest entity) {
         //TODO: process PUT request

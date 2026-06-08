@@ -36,7 +36,7 @@ public class UserDto {
                 .createAt(user.getCreateAt())
                 .updateAt(user.getUpdateAt())
                 .passwordChangedAt(user.getPasswordChangedAt())
-                .place(PlaceDto.fromEntity(user.getPlace()))
+                .place(user.getPlace() != null ? PlaceDto.fromEntity(user.getPlace()) : null)
                 .build();
     }
 }

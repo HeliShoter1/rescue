@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rescue.rescue.model.Relative;
 
-@Transactional(propagation = Propagation.MANDATORY)
 public interface RelativeReponsitory extends JpaRepository<Relative, Long>  {
     
     @Query("""

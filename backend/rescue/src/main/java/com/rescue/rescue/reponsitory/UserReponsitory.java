@@ -12,12 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
+import com.rescue.rescue.model.Place;
 import com.rescue.rescue.model.User;
 
 
-@Transactional(propagation = Propagation.MANDATORY)
 public interface UserReponsitory extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
+
+    Optional<User> findById(Long UserId);
 
     @Query("""
         SELECT u 
@@ -35,4 +37,16 @@ public interface UserReponsitory extends JpaRepository<User, Long> {
         @Param("search") String search,
         @Param("cursor") Long cursor,
         @Param("limit") Integer limit);
+
+    @Modifying
+    @Query("UPDATE User u SET u.place = null WHERE u.id = :id")
+    void clearPlaceById(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE User u SET u.status = :status WHERE u.id = :id")
+    void updateStatusById(@Param("id") Long id, @Param("status") UserStatus status);
+
+    @Modifying
+    @Query("UPDATE User u SET u.place = :place WHERE u.id = :id")
+    void updatePlaceById(@Param("id") Long id, @Param("place") Place place);
 }

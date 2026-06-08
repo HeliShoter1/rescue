@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.PostDto;
 import com.rescue.rescue.enums.UserRole;
+import com.rescue.rescue.exceptions.AccessDeniedException;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.Post;
 import com.rescue.rescue.model.RescueTeam;
@@ -16,6 +18,7 @@ import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.GroupRepository;
 import com.rescue.rescue.reponsitory.PostRepository;
 import com.rescue.rescue.reponsitory.RescueTeamRepository;
+import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreatePost;
 import com.rescue.rescue.request.UpdatePost;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
@@ -31,6 +34,7 @@ public class PostService implements IPostService {
     private final ModelMapper modelMapper;
     private final RescueTeamRepository rescueTeamRepository;
     private final GroupRepository groupRepository;
+    private final UserReponsitory userReponsitory;
 
 
     @Override
@@ -41,35 +45,52 @@ public class PostService implements IPostService {
 
     @Override
     public PostDto createPost(CreatePost post) {    
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         Post postEntity = modelMapper.map(post, Post.class);
+        User user = userReponsitory.findById(userId).get();
+        postEntity.setUser(user);
         Post savedPost = postRepository.save(postEntity);
         return PostDto.fromEntity(savedPost);
     }
 
     @Override
-    public void updatePost(UpdatePost post) {
+    public PostDto updatePost(UpdatePost post) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        UserRole role =  ((RescueUserDetail) authentication.getPrincipal()).getRole();
+        System.out.println(userId);
 
         Post postEntity = postRepository.findById(post.getId())
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + post.getId()));
-
-        RescueTeam rescueTeam = rescueTeamRepository.findByPostId(post.getId());
-        User user = groupRepository
-                    .findByUserIdAndRescueTeamId(userId, rescueTeam.getId())
-                    .map(Group::getUser)
-                    .orElseThrow(() -> new RuntimeException("User not found"));;
-        UserRole userRole = (user != null) ? user.getRole() : null;
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + post.getId()));
 
         boolean isOwner   = userId.equals(postEntity.getUser().getId());
-        boolean isAdmin   = postEntity.getUser().getRole() == UserRole.ADMIN;
-        boolean isManager = userRole == UserRole.MANAGER;
+        System.out.println(isOwner);
+        boolean isAdmin   = role == UserRole.ADMIN;
 
-        if (!isOwner && !isAdmin && !isManager) {
-            throw new RuntimeException("You are not authorized to update this post");
+        if(isAdmin || isOwner){
+            modelMapper.map(post, postEntity);
+            PostDto postDto = PostDto.fromEntity(postRepository.save(postEntity));  
+            return postDto; 
+        }else{
+            RescueTeam rescueTeam = rescueTeamRepository.findByPostId(post.getId());
+            if(rescueTeam == null){
+                throw new AccessDeniedException("You are not manager of post to update this post");
+            }
+            User user = groupRepository
+                        .findByUserIdAndRescueTeamId(userId, rescueTeam.getId())
+                        .map(Group::getUser)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));;
+            UserRole userRole = (user != null) ? user.getRole() : null;
+
+            boolean isManager = userRole == UserRole.MANAGER;
+
+            if (!isManager) {
+                throw new AccessDeniedException("You are not manager of post to update this post");
+            }
+
+            PostDto postDto = PostDto.fromEntity(postRepository.save(postEntity));  
+            return postDto; 
         }
-
-        modelMapper.map(post, postEntity);
-        postRepository.save(postEntity); 
     }
 }

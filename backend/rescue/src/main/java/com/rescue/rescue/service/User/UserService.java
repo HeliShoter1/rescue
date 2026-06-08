@@ -9,18 +9,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.rescue.rescue.dto.PlaceDto;
 import com.rescue.rescue.dto.UserDto;
+import com.rescue.rescue.enums.PostStatus;
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.exceptions.UserAlreadyExistsException;
 import com.rescue.rescue.exceptions.UserNotFoundException;
+import com.rescue.rescue.model.Place;
+import com.rescue.rescue.model.Post;
 import com.rescue.rescue.model.User;
+import com.rescue.rescue.reponsitory.PlaceRepository;
+import com.rescue.rescue.reponsitory.PostRepository;
 import com.rescue.rescue.reponsitory.UserReponsitory;
+import com.rescue.rescue.request.CreatePlace;
 import com.rescue.rescue.request.CreateUserRequest;
 import com.rescue.rescue.request.UserUpdatePassword;
 import com.rescue.rescue.request.UserUpdateRole;
 import com.rescue.rescue.request.UserUpdateStatus;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
+import com.rescue.rescue.service.Place.PlaceService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +39,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements IUserService {
     private final UserReponsitory userRepository;
     private final ModelMapper modelMapper;
+    private final PlaceRepository placeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PostRepository postRepository;
 
     @Override
     public List<UserDto> getAllUsers(UserStatus status, UserRole role, String search, Long cursor, Integer limit) {
@@ -78,8 +88,14 @@ public class UserService implements IUserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         user.setStatus(userUpdateStatus.getStatus());
-        User updatedUser = userRepository.save(user);
-        return this.convertDto(updatedUser);
+        userRepository.updateStatusById(id, userUpdateStatus.getStatus());
+        Post post = Post.builder()
+                .user(user)
+                .content("User " + user.getName() + " has changed status to " + userUpdateStatus.getStatus())
+                .status(PostStatus.PENDING)
+                .build();
+        postRepository.save(post);
+        return this.convertDto(user);
     }
     @Override 
     public UserDto updateUserPassword(UserUpdatePassword userUpdatePassword) {
@@ -102,6 +118,21 @@ public class UserService implements IUserService {
         user.setRole(newRole.getRole());
         User updatedUser = userRepository.save(user);
         return this.convertDto(updatedUser);
+    }
+
+    @Override
+    public UserDto updateUserPlace(CreatePlace createPlace) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Place place = Place.builder()
+                .name(createPlace.getName())
+                .latitude(createPlace.getLatitude())
+                .longitude(createPlace.getLongtude())
+                .build();
+        placeRepository.save(place);
+        userRepository.updatePlaceById(id, place);
+        return this.convertDto( userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id)));
     }
 
     @Override

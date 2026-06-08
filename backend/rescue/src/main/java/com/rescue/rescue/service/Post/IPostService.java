@@ -9,5 +9,5 @@ import com.rescue.rescue.request.UpdatePost;
 public interface IPostService {
     List<PostDto> getAllPost(Long cursor, Integer limit);
     PostDto createPost(CreatePost post);    
-    void updatePost( UpdatePost post);
+    PostDto updatePost( UpdatePost post);
 }

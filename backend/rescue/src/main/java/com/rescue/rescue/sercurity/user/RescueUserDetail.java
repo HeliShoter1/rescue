@@ -1,5 +1,6 @@
 package com.rescue.rescue.sercurity.user;
 
+import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.model.User;
 
 import java.util.Collection;
@@ -24,6 +25,7 @@ public class RescueUserDetail implements UserDetails{
     private Long id;
     private String phoneNumber;
     private String password;
+    private UserRole role;
 
     private Collection<GrantedAuthority> authorities;
 
@@ -35,11 +37,16 @@ public class RescueUserDetail implements UserDetails{
                 user.getId(),
                 user.getPhoneNumber(),
                 user.getPassword(),
+                user.getRole(),
                 authorities);
     }
 
     public Long getId(){
         return this.id;
+    }
+    
+    public UserRole getRole(){
+        return this.role;
     }
 
     @Override

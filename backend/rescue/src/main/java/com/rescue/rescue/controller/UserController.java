@@ -11,6 +11,7 @@ import com.rescue.rescue.dto.UserDto;
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.reponse.ApiResponse;
+import com.rescue.rescue.request.CreatePlace;
 import com.rescue.rescue.request.CreateUserRequest;
 import com.rescue.rescue.request.UserUpdateRole;
 import com.rescue.rescue.request.UserUpdateStatus;
@@ -38,6 +39,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse("success", userDto));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/allusers")
     public ResponseEntity<ApiResponse> getAllUsers(
                             @RequestParam (value = "status", required = false) UserStatus status,
@@ -62,8 +64,14 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse("success", userDto));
     } 
 
+    @PutMapping("/update/place")
+    public ResponseEntity<ApiResponse> updateUserPlace(@RequestBody CreatePlace placeId) {
+        UserDto userDto = userService.updateUserPlace(placeId);
+        return ResponseEntity.ok(new ApiResponse("success", userDto));
+    }
+
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("update/{id}/role")
+    @PutMapping("/update/{id}/role")
     public ResponseEntity<ApiResponse> updateUserRole(@PathVariable Long id, @RequestBody UserUpdateRole userUpdate) {
         UserDto userDto = userService.updateUserRole(id, userUpdate);
         return ResponseEntity.ok(new ApiResponse("success", userDto));

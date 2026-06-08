@@ -6,6 +6,7 @@ import com.rescue.rescue.dto.UserDto;
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.model.User;
+import com.rescue.rescue.request.CreatePlace;
 import com.rescue.rescue.request.CreateUserRequest;
 import com.rescue.rescue.request.UserUpdatePassword;
 import com.rescue.rescue.request.UserUpdateRole;
@@ -19,5 +20,6 @@ public interface IUserService {
     UserDto updateUserStatus(UserUpdateStatus userUpdateStatus);
     UserDto updateUserPassword(UserUpdatePassword userUpdatePassword);
     UserDto updateUserRole(Long userId, UserUpdateRole userUpdateRole);
+    UserDto updateUserPlace( CreatePlace placeId);
     UserDto convertDto(User user);
 }

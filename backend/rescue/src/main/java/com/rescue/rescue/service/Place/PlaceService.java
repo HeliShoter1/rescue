@@ -1,11 +1,16 @@
 package com.rescue.rescue.service.Place;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.PlaceDto;
 import com.rescue.rescue.model.Place;
+import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.PlaceRepository;
+import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreatePlace;
+import com.rescue.rescue.sercurity.user.RescueUserDetail;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -17,6 +22,8 @@ import lombok.AllArgsConstructor;
 public class PlaceService implements IPlaceService {
     private final PlaceRepository placeRepository;
 
+    private final UserReponsitory userRepository;
+
     @Override
     public PlaceDto getPlaceById(Long id) {
         Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
@@ -25,7 +32,7 @@ public class PlaceService implements IPlaceService {
 
     @Override
     public PlaceDto createPlace(CreatePlace placeDto) {
-         Place place = Place.builder()
+        Place place = Place.builder()
                 .name(placeDto.getName())
                 .latitude(placeDto.getLatitude())
                 .longitude(placeDto.getLongtude())
@@ -36,8 +43,14 @@ public class PlaceService implements IPlaceService {
 
     @Override
     public void deletePlaceById(Long id) {
-        // TODO Auto-generated method stub
         Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getPlace() == null || !user.getPlace().getId().equals(id) ) {
+            throw new SecurityException("You do not have permission to delete this place");
+        }
+        userRepository.clearPlaceById(userId);
         placeRepository.delete(place);
     }
     
