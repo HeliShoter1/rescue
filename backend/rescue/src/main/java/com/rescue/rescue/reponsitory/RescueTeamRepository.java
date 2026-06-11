@@ -12,7 +12,7 @@ import jakarta.transaction.Transactional;
 
 @Transactional
 public interface RescueTeamRepository extends JpaRepository<RescueTeam, Long> {
-    RescueTeam findByPostId(Long postId);
+    java.util.Optional<RescueTeam> findByPostId(Long postId);
 
     @Query("""
         SELECT r 

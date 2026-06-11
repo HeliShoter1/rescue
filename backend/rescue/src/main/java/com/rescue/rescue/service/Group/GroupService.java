@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.UserDto;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.RescueTeam;
 import com.rescue.rescue.model.User;
@@ -36,15 +37,34 @@ public class GroupService implements IGroupService {
                 .toList();
     }
 
+
     @Override
     public UserDto addUserToRescueTeam(Long rescueTeamId) {
         // Cần inject UserRepository và RescueTeamRepository để lấy entity
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         RescueTeam rescueTeam = rescueTeamRepository.findById(rescueTeamId)
-                .orElseThrow(() -> new RuntimeException("RescueTeam not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("RescueTeam not found"));
+
+        Group group = Group.builder()
+                .user(user)
+                .rescueTeam(rescueTeam)
+                .build();
+
+        groupRepository.save(group);
+        return UserDto.fromEntity(user);
+    }
+
+    @Override
+    public UserDto addUserToRescueTeamByPost(Long postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        RescueTeam rescueTeam = rescueTeamRepository.findByPostId(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("RescueTeam not found"));
 
         Group group = Group.builder()
                 .user(user)
@@ -58,7 +78,7 @@ public class GroupService implements IGroupService {
     @Override
     public UserDto removeUserFromRescueTeam(Long userId, Long rescueTeamId) {
         Group group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeamId)
-                .orElseThrow(() -> new RuntimeException("Group not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
 
         groupRepository.delete(group);
         return UserDto.fromEntity(group.getUser());

@@ -11,5 +11,5 @@ public interface IGroupService {
 
     UserDto removeUserFromRescueTeam(Long userId, Long rescueTeamId);
     
-    
+    UserDto addUserToRescueTeamByPost(Long postId);
 }

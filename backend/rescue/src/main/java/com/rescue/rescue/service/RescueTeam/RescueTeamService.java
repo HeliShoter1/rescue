@@ -3,6 +3,8 @@ package com.rescue.rescue.service.RescueTeam;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.RescueTeamDto;
@@ -10,10 +12,12 @@ import com.rescue.rescue.enums.RescueTeamStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Post;
 import com.rescue.rescue.model.RescueTeam;
+import com.rescue.rescue.reponsitory.GroupRepository;
 import com.rescue.rescue.reponsitory.PostRepository;
 import com.rescue.rescue.reponsitory.RescueTeamRepository;
 import com.rescue.rescue.request.CreateRescueTeamRequest;
 import com.rescue.rescue.request.UpdateRescueTeamRequest;
+import com.rescue.rescue.sercurity.user.RescueUserDetail;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -35,7 +39,8 @@ public class RescueTeamService implements IRescueTeamService {
 
     @Override
     public RescueTeamDto getRescueTeamByPostId(Long postId) {
-        RescueTeam rescueTeam = rescueTeamRepository.findByPostId(postId);
+        RescueTeam rescueTeam = rescueTeamRepository.findByPostId(postId)
+                .orElseThrow(() -> new RuntimeException("Rescue team not found with post id: " + postId));
         return RescueTeamDto.fromEntity(rescueTeam);
     }
 
@@ -61,9 +66,11 @@ public class RescueTeamService implements IRescueTeamService {
 
     @Override
     public void updateRescueTeam(UpdateRescueTeamRequest request) { 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         RescueTeam rescueTeam = rescueTeamRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("Rescue team not found with id: " + request.getId()));
-        modelMapper.map(request, rescueTeam);
+        rescueTeam.setStatus(request.getStatus());
         rescueTeamRepository.save(rescueTeam);
     }
     

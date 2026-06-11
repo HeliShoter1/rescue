@@ -73,10 +73,8 @@ public class PostService implements IPostService {
             PostDto postDto = PostDto.fromEntity(postRepository.save(postEntity));  
             return postDto; 
         }else{
-            RescueTeam rescueTeam = rescueTeamRepository.findByPostId(post.getId());
-            if(rescueTeam == null){
-                throw new AccessDeniedException("You are not manager of post to update this post");
-            }
+            RescueTeam rescueTeam = rescueTeamRepository.findByPostId(post.getId()).orElseThrow(() -> new AccessDeniedException("You are not manager of post to update this post"));
+        
             User user = groupRepository
                         .findByUserIdAndRescueTeamId(userId, rescueTeam.getId())
                         .map(Group::getUser)

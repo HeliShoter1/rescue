@@ -21,6 +21,8 @@ public class WebSocketEventListener {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
         String userId = accessor.getFirstNativeHeader("userId");
         if (userId != null) {
+            // Lưu vào session attributes để dùng lúc disconnect
+            accessor.getSessionAttributes().put("userId", userId);
             redisTemplate.opsForSet().add(ONLINE_USERS_KEY, userId);
         }
     }
@@ -28,7 +30,8 @@ public class WebSocketEventListener {
     @EventListener
     public void handleDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-        String userId = accessor.getFirstNativeHeader("userId");
+        // Đọc từ session attributes thay vì native header
+        String userId = (String) accessor.getSessionAttributes().get("userId");
         if (userId != null) {
             redisTemplate.opsForSet().remove(ONLINE_USERS_KEY, userId);
         }

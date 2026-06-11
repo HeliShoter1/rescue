@@ -46,7 +46,7 @@ public class RescueTeamController {
     }
 
     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
-    @PutMapping("/update/")
+    @PutMapping("/update")
     public ResponseEntity<ApiResponse> putMethodName( @RequestBody UpdateRescueTeamRequest entity) {
         //TODO: process PUT request
         rescueTeamService.updateRescueTeam(entity);
