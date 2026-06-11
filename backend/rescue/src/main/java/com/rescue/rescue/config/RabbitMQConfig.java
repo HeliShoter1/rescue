@@ -10,29 +10,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String MESSAGE_QUEUE    = "message.queue";
-    public static final String MESSAGE_EXCHANGE = "message.exchange";
-    public static final String MESSAGE_ROUTING_KEY = "message.routing.key";
+    public static final String QUEUE       = "notification.queue";
+    public static final String EXCHANGE    = "notification.exchange";
+    public static final String ROUTING_KEY = "notification.routing";
 
     @Bean
-    public Queue messageQueue() {
-        return new Queue(MESSAGE_QUEUE, true); 
+    public Queue notificationQueue() {
+        return new Queue(QUEUE, true); // durable = true
     }
 
     @Bean
-    public DirectExchange messageExchange() {
-        return new DirectExchange(MESSAGE_EXCHANGE);
+    public DirectExchange notificationExchange() {
+        return new DirectExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding messageBinding(Queue messageQueue, DirectExchange messageExchange) {
+    public Binding notificationBinding(Queue notificationQueue,
+                                       DirectExchange notificationExchange) {
         return BindingBuilder
-                .bind(messageQueue)
-                .to(messageExchange)
-                .with(MESSAGE_ROUTING_KEY);
+                .bind(notificationQueue)
+                .to(notificationExchange)
+                .with(ROUTING_KEY);
     }
 
-    // Dùng JSON thay vì Java serialization
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();

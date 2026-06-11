@@ -16,6 +16,7 @@ import com.rescue.rescue.reponsitory.GroupRepository;
 import com.rescue.rescue.reponsitory.RescueTeamRepository;
 import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
+import com.rescue.rescue.service.Notification.INotificationService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class GroupService implements IGroupService {
     private final GroupRepository groupRepository;
     private final RescueTeamRepository rescueTeamRepository;
     private final UserReponsitory userRepository;
+    private final INotificationService notificationService;
 
     @Override
     public List<UserDto> getUsersByRescueTeamId(Long rescueTeamId, Long cursor, Integer limit) {
@@ -40,7 +42,6 @@ public class GroupService implements IGroupService {
 
     @Override
     public UserDto addUserToRescueTeam(Long rescueTeamId) {
-        // Cần inject UserRepository và RescueTeamRepository để lấy entity
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         User user = userRepository.findById(userId)
@@ -72,6 +73,8 @@ public class GroupService implements IGroupService {
                 .build();
 
         groupRepository.save(group);
+        User manager = groupRepository.findManagerByRescueTeamId(rescueTeam.getId());
+        notificationService.sendViaQueue(manager.getId(), userId, "Thêm thành viên", user.getName() + " đã tham gia đội cứu hộ");
         return UserDto.fromEntity(user);
     }
 
@@ -79,8 +82,9 @@ public class GroupService implements IGroupService {
     public UserDto removeUserFromRescueTeam(Long userId, Long rescueTeamId) {
         Group group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
-
+        User manager = groupRepository.findManagerByRescueTeamId(group.getRescueTeam().getId());
         groupRepository.delete(group);
+        notificationService.sendViaQueue(manager.getId(), userId, "Xóa thành viên", group.getUser().getName() + " đã rời khỏi đội cứu hộ");
         return UserDto.fromEntity(group.getUser());
     }
 }

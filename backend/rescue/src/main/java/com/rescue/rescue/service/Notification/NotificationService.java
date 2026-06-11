@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.rescue.rescue.MessageQueue.notification.NotificationProducer;
 import com.rescue.rescue.enums.NotificationStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.exceptions.UserDisabledException;
@@ -30,6 +31,7 @@ public class NotificationService implements INotificationService {
     private final WebSocketEventListener webSocketEventListener;
     private final NotificationsRepository notificationRepository;
     private final UserReponsitory userRepository;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public List<Notification> getNotificationsByUserId(Long userId, Long cursor, Integer limit) {
@@ -70,6 +72,11 @@ public class NotificationService implements INotificationService {
                 notification
             );
         }
+    }
+
+    @Override
+    public void sendViaQueue(Long receiverId, Long senderId, String title, String content) {
+        notificationProducer.send(receiverId, senderId, title, content);
     }
 
     public void updateNotification(Long userId) {

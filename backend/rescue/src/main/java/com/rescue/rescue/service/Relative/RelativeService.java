@@ -57,8 +57,9 @@ public class RelativeService implements IRelativeService {
 
         RelativeDto saved = RelativeDto.fromEntity(relativeRepository.save(relative));
 
-        notificationService.sendNotification(
+        notificationService.sendViaQueue(
                 relative.getRelative().getId(),
+                relative.getUser().getId(),
                 "Thêm người thân",
                 "Bạn vừa được thêm vào danh sách người thân"
         );
@@ -76,8 +77,9 @@ public class RelativeService implements IRelativeService {
             throw new SecurityException("You do not have permission to delete this relative");
         }
         relativeRepository.deleteById(id);
-        notificationService.sendNotification(
+        notificationService.sendViaQueue(
                 relative.getRelative().getId(),
+                relative.getUser().getId(),
                 "Xóa người thân",
                 "Bạn vừa bị xóa khỏi danh sách người thân"
         );

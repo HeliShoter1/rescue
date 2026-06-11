@@ -11,4 +11,5 @@ public interface INotificationService {
     void updateNotification(Long userId);
     List<Notification> getNotificationsByUserId(Long userId, Long cursor, Integer limit);
     Optional<Notification> getNotificationById(Long notificationId);
+    void sendViaQueue(Long receiverId, Long senderId, String title, String content);
 }
