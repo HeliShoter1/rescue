@@ -1,5 +1,7 @@
 package com.rescue.rescue.model;
 
+import com.rescue.rescue.enums.MemberStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +25,9 @@ public class Group {
     @ManyToOne
     @JoinColumn(name = "rescue_id", nullable = false)
     private RescueTeam rescueTeam;
+
+    @Column(name = "status")
+    private MemberStatus status = MemberStatus.PENDING;
 
     public Group orElseThrow(Object object) {
         // TODO Auto-generated method stub

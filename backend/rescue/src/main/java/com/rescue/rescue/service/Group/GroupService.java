@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.UserDto;
+import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.RescueTeam;
@@ -41,9 +42,7 @@ public class GroupService implements IGroupService {
 
 
     @Override
-    public UserDto addUserToRescueTeam(Long rescueTeamId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+    public UserDto AcceptUserToRescueTeam(Long rescueTeamId, Long userId, MemberStatus status) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         RescueTeam rescueTeam = rescueTeamRepository.findById(rescueTeamId)
@@ -52,6 +51,7 @@ public class GroupService implements IGroupService {
         Group group = Group.builder()
                 .user(user)
                 .rescueTeam(rescueTeam)
+                .status(status)
                 .build();
 
         groupRepository.save(group);
@@ -83,7 +83,8 @@ public class GroupService implements IGroupService {
         Group group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
         User manager = groupRepository.findManagerByRescueTeamId(group.getRescueTeam().getId());
-        groupRepository.delete(group);
+        group.setStatus(MemberStatus.DELETED);
+        groupRepository.save(group);
         notificationService.sendViaQueue(manager.getId(), userId, "Xóa thành viên", group.getUser().getName() + " đã rời khỏi đội cứu hộ");
         return UserDto.fromEntity(group.getUser());
     }

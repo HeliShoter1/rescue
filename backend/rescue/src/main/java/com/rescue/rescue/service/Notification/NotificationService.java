@@ -54,10 +54,12 @@ public class NotificationService implements INotificationService {
 
     @Override
     @Transactional
-    public void sendNotification(Long userId, String title, String content) {
+    public void sendNotification(Long userId, Long senderId, String title, String content) {
         User user = userRepository.findById(userId).orElse(null);
+        User sender = userRepository.findById(senderId).orElse(null);
         Notification notification = Notification.builder()
                 .user(user)
+                .sender(sender)
                 .title(title)
                 .content(content)
                 .status(NotificationStatus.UNREAD)

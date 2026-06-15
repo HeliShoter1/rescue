@@ -68,5 +68,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
 
+    @OneToMany(mappedBy = "sender")
+    private List<Notification> sentNotifications;
 
 }

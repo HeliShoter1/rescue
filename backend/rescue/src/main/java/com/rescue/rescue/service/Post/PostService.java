@@ -47,7 +47,9 @@ public class PostService implements IPostService {
     public PostDto createPost(CreatePost post) {    
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
-        Post postEntity = modelMapper.map(post, Post.class);
+        Post postEntity = Post.builder()
+                .content(post.getContent())
+                .build();
         User user = userReponsitory.findById(userId).get();
         postEntity.setUser(user);
         Post savedPost = postRepository.save(postEntity);

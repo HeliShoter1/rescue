@@ -28,6 +28,7 @@ import com.rescue.rescue.request.UserUpdatePassword;
 import com.rescue.rescue.request.UserUpdateRole;
 import com.rescue.rescue.request.UserUpdateStatus;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
+import com.rescue.rescue.service.Notification.NotificationService;
 import com.rescue.rescue.service.Place.PlaceService;
 
 import jakarta.transaction.Transactional;
@@ -42,6 +43,7 @@ public class UserService implements IUserService {
     private final PlaceRepository placeRepository;
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
     @Override
     public List<UserDto> getAllUsers(UserStatus status, UserRole role, String search, Long cursor, Integer limit) {
@@ -95,6 +97,12 @@ public class UserService implements IUserService {
                 .status(PostStatus.PENDING)
                 .build();
         postRepository.save(post);
+        if(user.getStatus().equals(UserStatus.EMERGENCY)){
+            List<User> admin = userRepository.findByRole(UserRole.ADMIN);
+            for(User u: admin){
+                notificationService.sendViaQueue(u.getId(), id, "User EMERGENCY", "User " + user.getName() + " has status to EMERGENCY");
+            }
+        }
         return this.convertDto(user);
     }
     @Override 

@@ -24,6 +24,10 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
     @Column(name = "content")
     private String content;
 

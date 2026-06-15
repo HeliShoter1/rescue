@@ -22,6 +22,7 @@ public class NotificationConsumer {
         log.info("Received notification for userId={}", message.getReceiverId());
         notificationService.sendNotification(
                 message.getReceiverId(),
+                message.getSenderId(),
                 message.getTitle(),
                 message.getContent()
         );
