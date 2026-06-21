@@ -50,7 +50,6 @@ public class HistoryController {
     
     @PutMapping("/history/{id}")
     public ResponseEntity<ApiResponse> putMethodName(@PathVariable Long id, @RequestBody HistoryStatus entity) {
-        //TODO: process PUT request
         return ResponseEntity.ok(new ApiResponse("success", historyService.UpdateStatus(id, entity)));
     }
     

@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.MessageQueue.notification.NotificationProducer;
+import com.rescue.rescue.dto.NotificationDTO;
 import com.rescue.rescue.enums.NotificationStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.exceptions.UserDisabledException;
@@ -34,22 +35,26 @@ public class NotificationService implements INotificationService {
     private final NotificationProducer notificationProducer;
 
     @Override
-    public List<Notification> getNotificationsByUserId(Long userId, Long cursor, Integer limit) {
-        return notificationRepository.findByUserId(userId, cursor, limit);
+    public List<NotificationDTO> getNotificationsByUserId( Long cursor, Integer limit) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        List<NotificationDTO> notifications = notificationRepository.findByUserId(userId, cursor, limit).stream()
+                .map(NotificationDTO::fromEntity)
+                .toList();
+
+        return notifications;
     }
 
     @Override
-    public Optional<Notification> getNotificationById(Long notificationId) {
+    public Optional<NotificationDTO> getNotificationById(Long notificationId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
         Notification notification = notificationRepository.findById(notificationId).orElse(null);
+        System.out.println(notification);
         if(!notification.getUser().getId().equals(userId)) {
             throw new UserDisabledException("Notification not found with id: " + notificationId);
         }
-        if (notification == null) {
-            throw new ResourceNotFoundException("Notification not found with id: " + notificationId);
-        }
-        return Optional.of(notification);
+        return Optional.of(NotificationDTO.fromEntity(notification));
     }
 
     @Override
@@ -71,7 +76,7 @@ public class NotificationService implements INotificationService {
             messagingTemplate.convertAndSendToUser(
                 userId.toString(),
                 "/queue/notifications",  
-                notification
+                NotificationDTO.fromEntity(notification)
             );
         }
     }

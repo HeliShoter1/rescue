@@ -12,15 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rescue.rescue.model.Notification;
 
 public interface NotificationsRepository extends JpaRepository<Notification, Long> {
-    @Query("""
-        SELECT n 
-        FROM Notification n 
-        WHERE n.user.id = :userId
-        AND n.id >= :cursor
-        ORDER BY n.id ASC
-        LIMIT :limit
+    @Query(value = """
+    SELECT n FROM Notification n
+    WHERE n.user.id = :userId
+    AND n.id >= :cursor
+    ORDER BY n.id ASC
+    LIMIT :limit
     """)
-    List<Notification> findByUserId(Long userId, Long cursor, Integer limit);
+    List<Notification> findByUserId(
+        @Param("userId") Long userId, 
+        @Param("cursor") Long cursor, 
+        @Param("limit") Integer limit
+    );
     @Modifying
     @Query("UPDATE Notification n SET n.status = :status WHERE n.id = :id")
     Notification updateStatus(@Param("id") Long id, @Param("status") Boolean status);

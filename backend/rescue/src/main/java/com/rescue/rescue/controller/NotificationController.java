@@ -21,12 +21,11 @@ public class NotificationController {
 
     private final INotificationService notificationService;
 
-    @GetMapping("/{userId}/all")
-    public ResponseEntity<ApiResponse> getNotifications(@PathVariable Long userId,
-                                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
-                                                        @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getNotifications(@RequestParam(required = false, defaultValue = "0") Long cursor,
+                                                        @RequestParam(required = false, defaultValue = "10") Integer limit
     ) {
-        return  ResponseEntity.ok(new ApiResponse("Place created", notificationService.getNotificationsByUserId(userId, cursor, limit)));
+        return  ResponseEntity.ok(new ApiResponse(" all notifications", notificationService.getNotificationsByUserId( cursor, limit)));
     }
 
     @GetMapping("/{notiId}/notification")
