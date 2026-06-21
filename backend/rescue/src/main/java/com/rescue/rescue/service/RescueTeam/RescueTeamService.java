@@ -66,8 +66,14 @@ public class RescueTeamService implements IRescueTeamService {
 
     @Override
     public void updateRescueTeam(UpdateRescueTeamRequest request) { 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         RescueTeam rescueTeam = rescueTeamRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("Rescue team not found with id: " + request.getId()));
         rescueTeam.setStatus(request.getStatus());

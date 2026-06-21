@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.HistoryDto;
 import com.rescue.rescue.enums.HistoryStatus;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.History;
 import com.rescue.rescue.reponsitory.HistoryRepository;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
@@ -35,8 +36,14 @@ public class HistoryService implements IHistoryService {
 
     @Override
     public List<HistoryDto> GetAllByUserId(Long cursor, Integer limit) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         // TODO Auto-generated method stub
         List<HistoryDto> historyDto = historyRepository.GetAllByUserId(userId, cursor, limit)
                 .stream()
@@ -47,8 +54,14 @@ public class HistoryService implements IHistoryService {
 
     @Override
     public HistoryDto GetById() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         // TODO Auto-generated method stub
         HistoryDto historyDto = historyRepository.findById(userId)
                 .map(HistoryDto::fromEntity)

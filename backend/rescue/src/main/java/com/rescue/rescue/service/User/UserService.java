@@ -14,6 +14,7 @@ import com.rescue.rescue.dto.UserDto;
 import com.rescue.rescue.enums.PostStatus;
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.exceptions.UserAlreadyExistsException;
 import com.rescue.rescue.exceptions.UserNotFoundException;
 import com.rescue.rescue.model.Place;
@@ -85,8 +86,14 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto updateUserStatus(UserUpdateStatus userUpdateStatus) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long id;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         user.setStatus(userUpdateStatus.getStatus());
@@ -107,8 +114,14 @@ public class UserService implements IUserService {
     }
     @Override 
     public UserDto updateUserPassword(UserUpdatePassword userUpdatePassword) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long id;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         if (!passwordEncoder.matches(userUpdatePassword.getOldPassword(), user.getPassword())) {
@@ -130,8 +143,14 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto updateUserPlace(CreatePlace createPlace) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long id;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            id = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         Place place = Place.builder()
                 .name(createPlace.getName())
                 .latitude(createPlace.getLatitude())

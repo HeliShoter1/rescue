@@ -36,8 +36,14 @@ public class NotificationService implements INotificationService {
 
     @Override
     public List<NotificationDTO> getNotificationsByUserId( Long cursor, Integer limit) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         List<NotificationDTO> notifications = notificationRepository.findByUserId(userId, cursor, limit).stream()
                 .map(NotificationDTO::fromEntity)
                 .toList();
@@ -47,8 +53,14 @@ public class NotificationService implements INotificationService {
 
     @Override
     public Optional<NotificationDTO> getNotificationById(Long notificationId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+         Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         Notification notification = notificationRepository.findById(notificationId).orElse(null);
         System.out.println(notification);
         if(!notification.getUser().getId().equals(userId)) {

@@ -45,8 +45,14 @@ public class PostService implements IPostService {
 
     @Override
     public PostDto createPost(CreatePost post) {    
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         Post postEntity = Post.builder()
                 .content(post.getContent())
                 .build();
@@ -58,8 +64,14 @@ public class PostService implements IPostService {
 
     @Override
     public PostDto updatePost(UpdatePost post) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         UserRole role =  ((RescueUserDetail) authentication.getPrincipal()).getRole();
         System.out.println(userId);
 

@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.PlaceDto;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Place;
 import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.PlaceRepository;
@@ -44,8 +45,14 @@ public class PlaceService implements IPlaceService {
     @Override
     public void deletePlaceById(Long id) {
         Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+         Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         if (user.getPlace() == null || !user.getPlace().getId().equals(id) ) {
             throw new SecurityException("You do not have permission to delete this place");

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.RelativeDto;
 import com.rescue.rescue.enums.RelationshipType;
+import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Relative;
 import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.RelativeReponsitory;
@@ -32,8 +33,14 @@ public class RelativeService implements IRelativeService {
 
     @Override
     public List<RelativeDto> getRelativesByUserId(Long cursor, Integer limit) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         return relativeRepository.findByUserId(userId, cursor, limit).stream()
                 .map(RelativeDto::fromEntity)
                 .toList();
@@ -41,9 +48,14 @@ public class RelativeService implements IRelativeService {
 
    @Override
     public RelativeDto createRelative(CreateRelative relativeDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
-
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         User relativeUser = userRepository.findById(relativeDto.getRelativeId())
@@ -69,8 +81,14 @@ public class RelativeService implements IRelativeService {
 
     @Override
     public void deleteRelative(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         Relative relative = relativeRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + id));
         if (!relative.getUser().getId().equals(userId) && !relative.getRelative().getId().equals(userId)) {
