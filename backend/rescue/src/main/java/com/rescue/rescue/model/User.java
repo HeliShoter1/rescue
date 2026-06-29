@@ -12,6 +12,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.ibatis.annotations.One;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -70,5 +72,8 @@ public class User {
 
     @OneToMany(mappedBy = "sender")
     private List<Notification> sentNotifications;
+
+    @OneToMany(mappedBy = "user")
+    private List<Task> tasks;
 
 }

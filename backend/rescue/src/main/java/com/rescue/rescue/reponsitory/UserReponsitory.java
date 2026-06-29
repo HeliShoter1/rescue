@@ -49,6 +49,7 @@ public interface UserReponsitory extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User u SET u.place = :place WHERE u.id = :id")
     void updatePlaceById(@Param("id") Long id, @Param("place") Place place);
+    
 
     List<User> findByRole(UserRole role);
 }

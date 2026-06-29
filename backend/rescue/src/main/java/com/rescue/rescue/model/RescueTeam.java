@@ -1,5 +1,7 @@
 package com.rescue.rescue.model;
 
+import java.util.List;
+
 import com.rescue.rescue.enums.RescueTeamStatus;
 
 import jakarta.persistence.*;
@@ -25,5 +27,8 @@ public class RescueTeam {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private RescueTeamStatus status = RescueTeamStatus.AVAILABLE;
+
+    @OneToMany(mappedBy = "rescueTeam")
+    private List<Task> tasks;
 
 }

@@ -36,7 +36,7 @@ public class PlaceService implements IPlaceService {
         Place place = Place.builder()
                 .name(placeDto.getName())
                 .latitude(placeDto.getLatitude())
-                .longitude(placeDto.getLongtude())
+                .longtude(placeDto.getLongtude())
                 .build();
         placeRepository.save(place);
         return PlaceDto.fromEntity(place);

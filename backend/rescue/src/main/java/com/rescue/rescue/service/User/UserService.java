@@ -154,7 +154,7 @@ public class UserService implements IUserService {
         Place place = Place.builder()
                 .name(createPlace.getName())
                 .latitude(createPlace.getLatitude())
-                .longitude(createPlace.getLongtude())
+                .longtude(createPlace.getLongtude())
                 .build();
         placeRepository.save(place);
         userRepository.updatePlaceById(id, place);

@@ -24,7 +24,7 @@ public class Place {
     private Double latitude;
 
     @Column(name = "longtude", nullable = false)  
-    private Double longitude;
+    private Double longtude;
 
     @Column(name = "name")
     private String name;

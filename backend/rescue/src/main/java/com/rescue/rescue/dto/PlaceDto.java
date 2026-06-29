@@ -22,7 +22,7 @@ public class PlaceDto {
                 .id(place.getId())
                 .name(place.getName())
                 .latitude(place.getLatitude())
-                .longitude(place.getLongitude())
+                .longitude(place.getLongtude())
                 .build();
         }
 }
