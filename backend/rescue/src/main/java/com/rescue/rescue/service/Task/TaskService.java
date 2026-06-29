@@ -85,7 +85,15 @@ public class TaskService  implements ITaskServide {
     }
 
     @Override
-    public List<TaskDto> getTaskByUserId(Long userId) {
+    public List<TaskDto> getTaskByUserId(){
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
         return taskRepository.findByUserId(userId)
                 .stream()
                 .map(TaskDto::fromEntity)

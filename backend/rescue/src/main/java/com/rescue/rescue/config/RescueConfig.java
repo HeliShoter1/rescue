@@ -42,7 +42,16 @@ public class RescueConfig {
     private List<String> securedUrls() {
         return List.of(
             apiPrefix + "/users/**",
-            apiPrefix + "/posts/**"
+            apiPrefix + "/posts/**",
+            apiPrefix + "/groups/**",
+            apiPrefix + "/rescue-teams/**",
+            apiPrefix + "/notifications/**",
+            apiPrefix + "/tasks/**",
+            apiPrefix + "/histories/**",
+            apiPrefix + "/places/**",
+            apiPrefix + "/relatives",
+            apiPrefix + "/rescue-teams"           
+            
         );
     }
 

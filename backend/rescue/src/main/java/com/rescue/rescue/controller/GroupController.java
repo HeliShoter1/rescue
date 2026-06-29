@@ -46,6 +46,7 @@ public class GroupController {
         return ResponseEntity.ok(new ApiResponse("User added to rescue team successfully", groupService.addUserToRescueTeamByPost(Long.parseLong(postId))));
     }
 
+    @PreAuthorize("hasAuthority('MANAGER')")
     @DeleteMapping("/rescue-teams/{rescueTeamId}/users/{userId}")
     public ResponseEntity<ApiResponse> removeUserFromRescueTeam(
                                         @PathVariable String rescueTeamId,
