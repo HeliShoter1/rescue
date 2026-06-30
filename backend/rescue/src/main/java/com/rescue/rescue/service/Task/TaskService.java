@@ -37,7 +37,7 @@ public class TaskService  implements ITaskServide {
     }
 
     @Override
-    public TaskDto registerTask(Long taskId) {
+    public void registerTask(Long taskId) {
         Authentication authentication ;
         Long userId;
         try {
@@ -51,7 +51,7 @@ public class TaskService  implements ITaskServide {
         if (task.getUser() != null) {
             throw new RuntimeException("Task is already registered by another user");
         }
-        return TaskDto.fromEntity(taskRepository.RegisterTask(userId, taskId));
+        taskRepository.RegisterTask(userId, taskId);
     }
 
     @Override

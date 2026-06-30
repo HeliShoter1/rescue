@@ -27,6 +27,7 @@ public class Group {
     private RescueTeam rescueTeam;
 
     @Column(name = "status")
+    @Builder.Default
     private MemberStatus status = MemberStatus.PENDING;
 
     public Group orElseThrow(Object object) {

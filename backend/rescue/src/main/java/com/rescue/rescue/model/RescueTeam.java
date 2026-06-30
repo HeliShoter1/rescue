@@ -26,6 +26,7 @@ public class RescueTeam {
     
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private RescueTeamStatus status = RescueTeamStatus.AVAILABLE;
 
     @OneToMany(mappedBy = "rescueTeam")

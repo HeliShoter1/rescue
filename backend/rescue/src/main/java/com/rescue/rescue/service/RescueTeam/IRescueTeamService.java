@@ -12,7 +12,8 @@ import com.rescue.rescue.request.UpdateRescueTeamRequest;
 public interface IRescueTeamService {
     RescueTeamDto getRescueTeamById(Long id);
     RescueTeamDto getRescueTeamByPostId(Long postId);
-    List<RescueTeamDto> getAllRescueTeams(RescueTeamStatus status, Long cursor, Integer limit );
+    List<RescueTeamDto> getAllRescueTeam(Long cursor, Long limit);
+    List<RescueTeamDto> getAllRescueTeamsByStatus(RescueTeamStatus status, Long cursor, Integer limit );
     RescueTeamDto createRescueTeam(CreateRescueTeamRequest request);
     void updateRescueTeam(UpdateRescueTeamRequest request);
     

@@ -6,6 +6,8 @@ import com.rescue.rescue.enums.TaskStatus;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,9 +26,11 @@ import lombok.Setter;
 @Builder
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String content;
-    private TaskStatus status;
+    @Builder.Default
+    private TaskStatus status = TaskStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "rescue_team_id")
@@ -36,7 +40,10 @@ public class Task {
     @JoinColumn(name = "user_id")
     @Nullable
     private User user;
+
+    @Builder.Default
     private LocalDate createAt = LocalDate.now();
 
+    @Builder.Default
     private LocalDate updateAt = LocalDate.now();
 }

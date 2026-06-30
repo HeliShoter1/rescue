@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 public class RescueTeamService implements IRescueTeamService {
     private final RescueTeamRepository rescueTeamRepository;
     private final PostRepository postRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public RescueTeamDto getRescueTeamById(Long id) {
@@ -45,7 +44,15 @@ public class RescueTeamService implements IRescueTeamService {
     }
 
     @Override
-    public List<RescueTeamDto> getAllRescueTeams(RescueTeamStatus status, Long cursor, Integer limit) {
+    public List<RescueTeamDto> getAllRescueTeam(Long cursor, Long limit){
+        return rescueTeamRepository.getAllRescueTeam(cursor, limit)
+                                    .stream()
+                                    .map(RescueTeamDto::fromEntity)
+                                    .toList();
+    }
+
+    @Override
+    public List<RescueTeamDto> getAllRescueTeamsByStatus(RescueTeamStatus status, Long cursor, Integer limit) {
         return rescueTeamRepository.findByStatus(status, cursor, limit)
                 .stream()
                 .map(RescueTeamDto::fromEntity)

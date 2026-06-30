@@ -39,19 +39,24 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private UserStatus status = UserStatus.SAFE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
+    @Builder.Default
     private UserRole role = UserRole.CITIZEN;
 
     @Column(name = "create_at")
+    @Builder.Default
     private LocalDate createAt = LocalDate.now();
 
     @Column(name = "update_at")
+    @Builder.Default
     private LocalDate updateAt = LocalDate.now();
 
     @Column(name = "password_changed_at")
+    @Builder.Default
     private LocalDate passwordChangedAt = LocalDate.now();
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

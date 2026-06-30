@@ -23,5 +23,14 @@ public interface RescueTeamRepository extends JpaRepository<RescueTeam, Long> {
     """)
     List<RescueTeam> findByStatus(RescueTeamStatus status, Long cursor, Integer limit);
     
+    @Query("""
+            SELECT r 
+            FROM RescueTeam r
+            where r.id >= :cursor
+            order by r.id asc
+            limit :limit
+            """)
+    List<RescueTeam> getAllRescueTeam(Long cursor, long limit);
+    
     
 }

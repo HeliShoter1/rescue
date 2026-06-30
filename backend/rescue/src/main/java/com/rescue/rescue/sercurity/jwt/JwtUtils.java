@@ -57,6 +57,15 @@ public class JwtUtils {
                 .getSubject();
     }
 
+    public Long getIdFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(this.key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
+    }   
+
     public boolean validateToken(String token){
         try {
             Jwts.parser()

@@ -12,7 +12,7 @@ public interface ITaskServide {
     TaskDto createTask(CreateTask task);
     TaskDto getTaskById(Long taskId);
     TaskDto updateTaskStatus(Long taskId, TaskStatus status);
-    TaskDto registerTask(Long taskId);
+    void registerTask(Long taskId);
     List<TaskDto> getTaskByUserId();
     List<TaskDto> getTaskByRescueTeamId(Long rescueTeamId);
 }

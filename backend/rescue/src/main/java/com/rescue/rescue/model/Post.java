@@ -26,13 +26,16 @@ public class Post {
     private User user;
 
     @Column(name = "create_at")
+    @Builder.Default
     private LocalDate createAt = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private PostStatus status = PostStatus.PENDING;
 
     @Column(name = "update_at")
+    @Builder.Default
     private LocalDate updateAt = LocalDate.now();
 
     @Column(name = "content")

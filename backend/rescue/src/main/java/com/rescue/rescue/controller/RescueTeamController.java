@@ -3,6 +3,7 @@ package com.rescue.rescue.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rescue.rescue.enums.RescueTeamStatus;
 import com.rescue.rescue.reponse.ApiResponse;
 import com.rescue.rescue.request.CreateRescueTeamRequest;
 import com.rescue.rescue.request.UpdateRescueTeamRequest;
@@ -37,6 +38,20 @@ public class RescueTeamController {
     public ResponseEntity<ApiResponse> getRescueTeamByPostId(@PathVariable Long postId) {
         return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getRescueTeamByPostId(postId)));
     }
+
+    @GetMapping("/rescueteams")
+    public ResponseEntity<ApiResponse> getAllRescueTeams(@RequestParam  (value="cursor", required = true, defaultValue = "0") Long cursor,
+                                                     @RequestParam(value = "limit", required = true, defaultValue = "10") Long limit) {
+        return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getAllRescueTeam( cursor, limit)));
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<ApiResponse> getAllRescueTeamByStatus(@RequestParam  (value="cursor", required = true, defaultValue = "0") Long cursor,
+                                                     @RequestParam(value = "limit", required = true, defaultValue = "10") Integer limit,
+                                                    @RequestParam(value = "status", required = true) RescueTeamStatus status ) {
+        return ResponseEntity.ok(new ApiResponse("success", rescueTeamService.getAllRescueTeamsByStatus(status, cursor, limit)));
+    }
+    
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")

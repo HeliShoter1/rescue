@@ -14,7 +14,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         SELECT t 
         FROM Task t 
         WHERE t.rescueTeam.id = :rescueTeamId
-        ORDer BY t.id ASC and t.createAt DESC
+        ORDer BY t.id ASC , t.createAt DESC
     """)
     List<Task> findByRescueTeamId(Long rescueTeamId);
 
@@ -22,7 +22,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         SELECT t 
         FROM Task t 
         WHERE t.user.id = :userId
-        ORDer BY t.id ASC and t.createAt DESC and t.updateAt DESC
+        ORDer BY t.id ASC , t.createAt DESC , t.updateAt DESC
     """)
     List<Task> findByUserId(Long userId);
 
@@ -37,11 +37,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Modifying
     @Query("""
-        UPDATE Task t 
-        SET t.user.id = :userId 
-        WHERE t.id = :taskId
+    UPDATE Task t
+    SET t.user.id = :userId, t.status = com.rescue.rescue.enums.TaskStatus.AGIND
+    WHERE t.id = :taskId
     """)
-    Task RegisterTask(Long userId, Long taskId);
+    void RegisterTask(Long userId, Long taskId);
     
     
 }

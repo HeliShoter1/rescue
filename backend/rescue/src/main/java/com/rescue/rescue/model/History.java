@@ -29,9 +29,11 @@ public class History {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Builder.Default
     @Column(name = "create_at")         
     private LocalDate createAt = LocalDate.now();
 
+    @Builder.Default
     @Column(name = "update_at")
     private LocalDate updateAt = LocalDate.now();
 

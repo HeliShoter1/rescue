@@ -32,10 +32,12 @@ public class Notification {
     private String content;
 
     @Column(name = "create_at")
+    @Builder.Default
     private LocalDate createAt = LocalDate.now();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private NotificationStatus status = NotificationStatus.UNREAD;
 
     @Column(name = "title",nullable = false)

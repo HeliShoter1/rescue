@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rescue.rescue.enums.TaskStatus;
 import com.rescue.rescue.reponse.ApiResponse;
 import com.rescue.rescue.request.CreateTask;
+import com.rescue.rescue.request.UpdateTaskStatus;
 import com.rescue.rescue.service.Task.ITaskServide;
 
 import jakarta.websocket.server.PathParam;
@@ -43,7 +44,8 @@ public class TaskController {
 
     @PostMapping("/{taskId}/register")
     public ResponseEntity<ApiResponse> registerTask(@PathVariable Long taskId) {
-        return ResponseEntity.ok(new ApiResponse("success", taskService.registerTask(taskId)));
+        taskService.registerTask(taskId);
+        return ResponseEntity.ok(new ApiResponse("success", null));
     }
 
     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
@@ -53,8 +55,8 @@ public class TaskController {
     }
 
     @PutMapping("/{taskId}/status")
-    public ResponseEntity<ApiResponse> updateTaskStatus(@PathVariable Long taskId, @PathParam("status") TaskStatus status) {
-        return ResponseEntity.ok(new ApiResponse("success", taskService.updateTaskStatus(taskId, status)));
+    public ResponseEntity<ApiResponse> updateTaskStatus(@PathVariable Long taskId, @RequestBody UpdateTaskStatus status) {
+        return ResponseEntity.ok(new ApiResponse("success", taskService.updateTaskStatus(taskId, status.getTaskStatus())));
     }
     
 }
