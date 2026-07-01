@@ -1,11 +1,14 @@
 package com.rescue.rescue.model;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
 import org.apache.ibatis.annotations.One;
+
+import com.rescue.rescue.enums.TypePlace;
 
 @Entity
 @Table(name = "places")
@@ -30,6 +33,11 @@ public class Place {
     private String name;
 
     @OneToOne(mappedBy = "place", fetch = FetchType.LAZY)
+    @Nullable
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_place", nullable = true)
+    private TypePlace typePlace;
 
 }

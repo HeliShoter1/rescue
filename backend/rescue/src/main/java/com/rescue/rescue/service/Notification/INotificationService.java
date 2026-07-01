@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.rescue.rescue.dto.NotificationDTO;
 import com.rescue.rescue.enums.NotificationStatus;
 import com.rescue.rescue.model.Notification;
+import com.rescue.rescue.model.User;
 
 public interface INotificationService {
     void sendNotification(Long userId, Long senderId, String title, String content);
@@ -13,4 +14,5 @@ public interface INotificationService {
     List<NotificationDTO> getNotificationsByUserId( Long cursor, Integer limit);
     Optional<NotificationDTO> getNotificationById(Long notificationId);
     void sendViaQueue(Long receiverId, Long senderId, String title, String content);
+    void notifyAllUser(List<User> users, Long senderId, String title, String content);
 }

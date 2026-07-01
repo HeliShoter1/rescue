@@ -39,7 +39,6 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse("success", userDto));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/allusers")
     public ResponseEntity<ApiResponse> getAllUsers(
                             @RequestParam (value = "status", required = false) UserStatus status,

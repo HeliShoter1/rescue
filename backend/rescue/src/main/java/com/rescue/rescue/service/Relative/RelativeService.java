@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.RelativeDto;
 import com.rescue.rescue.enums.RelationshipType;
+import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Relative;
 import com.rescue.rescue.model.User;
@@ -102,4 +103,30 @@ public class RelativeService implements IRelativeService {
                 "Bạn vừa bị xóa khỏi danh sách người thân"
         );
     }    
+
+    @Override
+    public void updateStatusUserByRelativeId(Long id, UserStatus status) {
+        Relative relative = relativeRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + id));
+        User user = relative.getRelative();
+        user.setStatus(status);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void updateStatusRelative(Long relativeId, UserStatus status) {
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        Relative relative = relativeRepository.findByRelativeIdAndUserId(relativeId, userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + relativeId));
+        User user = relative.getRelative();
+        user.setStatus(status);
+        userRepository.save(user);
+    }
 }

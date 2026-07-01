@@ -52,4 +52,12 @@ public interface UserReponsitory extends JpaRepository<User, Long> {
     
 
     List<User> findByRole(UserRole role);
+
+    @Query
+    ("""
+        SELECT u 
+        FROM User u 
+        WHERE u.place is not NULL
+    """)
+    List<User> findAllUserFilterPlace();
 }

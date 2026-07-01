@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rescue.rescue.dto.RelativeDto;
 import com.rescue.rescue.reponse.ApiResponse;
 import com.rescue.rescue.request.CreateRelative;
+import com.rescue.rescue.request.UpdateRelativeStatus;
 import com.rescue.rescue.service.Relative.IRelativeService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -46,6 +48,18 @@ public class RelativeController {
     @DeleteMapping("/deleteRelative/{id}")
     public ResponseEntity<ApiResponse> deleteRelative(@PathVariable Long id) {
         relativeService.deleteRelative(id);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+
+    @PutMapping("/updateRelative/{id}/user")
+    public ResponseEntity<ApiResponse> updateRelative(@RequestBody UpdateRelativeStatus updateStatus) {
+        relativeService.updateStatusRelative(updateStatus.getUserId(), updateStatus.getStatus());
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+
+    @PutMapping("/updateRelative/{id}/Relative")
+    public ResponseEntity<ApiResponse> updateRelativeById(@RequestBody UpdateRelativeStatus updateStatus) {
+        relativeService.updateStatusRelative(updateStatus.getRelativeId(), updateStatus.getStatus());
         return ResponseEntity.ok(new ApiResponse("success", null));
     }
 }

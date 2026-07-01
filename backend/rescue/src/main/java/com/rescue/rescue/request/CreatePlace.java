@@ -1,5 +1,7 @@
 package com.rescue.rescue.request;
 
+import com.rescue.rescue.enums.TypePlace;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,4 +21,6 @@ public class CreatePlace {
     @NotNull
     Double latitude;
     String name;
+
+    private TypePlace typePlace;
 }

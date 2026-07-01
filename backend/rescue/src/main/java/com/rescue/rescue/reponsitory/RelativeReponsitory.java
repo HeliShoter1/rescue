@@ -24,4 +24,13 @@ public interface RelativeReponsitory extends JpaRepository<Relative, Long>  {
     """)
     List<Relative> findByUserId(Long userId, Long cursor, Integer limit);
 
+    @Query
+    ("""
+        SELECT r 
+        FROM Relative r 
+        WHERE r.relative.id = :relativeId
+        AND r.user.id = :userId
+    """)
+    Optional<Relative> findByRelativeIdAndUserId(@Param("relativeId") Long relativeId, @Param("userId") Long userId);
+
 }   

@@ -24,7 +24,9 @@ import com.rescue.rescue.websocket.WebSocketEventListener;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService implements INotificationService {
@@ -70,6 +72,13 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
+    public void notifyAllUser(List<User> users, Long senderId, String title, String content) {
+        for (User user : users) {
+            notificationProducer.send(user.getId(), senderId, title, content);
+        }
+    }
+
+    @Override
     @Transactional
     public void sendNotification(Long userId, Long senderId, String title, String content) {
         User user = userRepository.findById(userId).orElse(null);
@@ -97,6 +106,7 @@ public class NotificationService implements INotificationService {
     public void sendViaQueue(Long receiverId, Long senderId, String title, String content) {
         notificationProducer.send(receiverId, senderId, title, content);
     }
+
 
     public void updateNotification(Long userId) {
         notificationRepository.findByUserId(userId, 0L, Integer.MAX_VALUE).forEach(notification -> {
