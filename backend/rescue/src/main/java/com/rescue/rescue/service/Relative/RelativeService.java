@@ -19,6 +19,7 @@ import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreateRelative;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
 import com.rescue.rescue.service.Notification.INotificationService;
+import com.rescue.rescue.service.User.IUserService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class RelativeService implements IRelativeService {
     private final RelativeReponsitory relativeRepository;
     private final UserReponsitory userRepository;
     private final INotificationService notificationService;
+    private final IUserService userService;
 
     @Override
     public List<RelativeDto> getRelativesByUserId(Long cursor, Integer limit) {
@@ -109,7 +111,7 @@ public class RelativeService implements IRelativeService {
         Relative relative = relativeRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + id));
         User user = relative.getRelative();
-        user.setStatus(status);
+        userService.updateUserStatus(user.getId(), status);
         userRepository.save(user);
     }
 
@@ -126,7 +128,7 @@ public class RelativeService implements IRelativeService {
         Relative relative = relativeRepository.findByRelativeIdAndUserId(relativeId, userId)
                 .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + relativeId));
         User user = relative.getRelative();
-        user.setStatus(status);
+        userService.updateUserStatus(user.getId(), status);
         userRepository.save(user);
     }
 }

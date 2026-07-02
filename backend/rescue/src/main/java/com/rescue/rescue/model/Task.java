@@ -1,17 +1,18 @@
 package com.rescue.rescue.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.rescue.rescue.enums.TaskStatus;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +29,11 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String content;
+
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.PENDING;
 
     @ManyToOne
@@ -42,8 +46,10 @@ public class Task {
     private User user;
 
     @Builder.Default
-    private LocalDate createAt = LocalDate.now();
+    private LocalDateTime createAt = LocalDateTime.now();
 
     @Builder.Default
-    private LocalDate updateAt = LocalDate.now();
+    private LocalDateTime updateAt = LocalDateTime.now();
+
+    private LocalDateTime completeAt;
 }

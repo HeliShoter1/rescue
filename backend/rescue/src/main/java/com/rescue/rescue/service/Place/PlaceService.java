@@ -63,6 +63,7 @@ public class PlaceService implements IPlaceService {
                                                         user.getPlace().getLatitude(), user.getPlace().getLongtude()
                                                 ) <= 1.0)
                                                 .collect(Collectors.toList());
+                notificationService.notifyAllUser(users, userId, "Dangerous area alert", "A dangerous area has been reported near your location. Please stay safe and avoid the area.");
                 
         }
         placeRepository.save(place);

@@ -1,5 +1,7 @@
 package com.rescue.rescue.dto;
 
+import java.time.LocalDateTime;
+
 import com.rescue.rescue.model.Task;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +20,8 @@ public class TaskDto {
     private String content;
     private String status;
     private RescueTeamDto rescueTeam;
+    private LocalDateTime createAt;
+    private LocalDateTime updateAt;
     private UserDto user;
 
     public static TaskDto fromEntity(Task task) {
@@ -27,6 +31,8 @@ public class TaskDto {
                 .status(task.getStatus().name())
                 .rescueTeam(task.getRescueTeam() != null ? RescueTeamDto.fromEntity(task.getRescueTeam()) : null)
                 .user(task.getUser() != null ? UserDto.fromEntity(task.getUser()) : null)
+                .createAt(task.getCreateAt())
+                .updateAt(task.getUpdateAt())
                 .build();
     }
 

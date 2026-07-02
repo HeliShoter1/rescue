@@ -1,5 +1,6 @@
 package com.rescue.rescue.dto;
 
+import com.rescue.rescue.enums.TypePlace;
 import com.rescue.rescue.model.Place;
 
 import lombok.Builder;
@@ -16,6 +17,7 @@ public class PlaceDto {
     private String name;
     private Double latitude;
     private Double longitude;
+    private TypePlace typePlace;
 
     public static PlaceDto fromEntity(Place place) {
         return PlaceDto.builder()
@@ -23,6 +25,7 @@ public class PlaceDto {
                 .name(place.getName())
                 .latitude(place.getLatitude())
                 .longitude(place.getLongtude())
+                .typePlace(place.getTypePlace())
                 .build();
         }
 }

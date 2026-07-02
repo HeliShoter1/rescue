@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.rescue.rescue.dto.PlaceDto;
 import com.rescue.rescue.dto.UserDto;
 import com.rescue.rescue.enums.PostStatus;
+import com.rescue.rescue.enums.TypePlace;
 import com.rescue.rescue.enums.UserRole;
 import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
@@ -112,6 +113,28 @@ public class UserService implements IUserService {
         }
         return this.convertDto(user);
     }
+
+    @Override
+    public UserDto updateUserStatus(Long userId, UserStatus status) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        user.setStatus(status);
+        userRepository.updateStatusById(userId, status);
+        Post post = Post.builder()
+                .user(user)
+                .content("User " + user.getName() + " has changed status to " + status)
+                .status(PostStatus.PENDING)
+                .build();
+        postRepository.save(post);
+        if(user.getStatus().equals(UserStatus.EMERGENCY)){
+            List<User> admin = userRepository.findByRole(UserRole.ADMIN);
+            for(User u: admin){
+                notificationService.sendViaQueue(u.getId(), userId, "User EMERGENCY", "User " + user.getName() + " has status to EMERGENCY");
+            }
+        }
+        return this.convertDto(user);
+    }
+    
     @Override 
     public UserDto updateUserPassword(UserUpdatePassword userUpdatePassword) {
         Authentication authentication ;
@@ -155,6 +178,7 @@ public class UserService implements IUserService {
                 .name(createPlace.getName())
                 .latitude(createPlace.getLatitude())
                 .longtude(createPlace.getLongtude())
+                .typePlace(TypePlace.USER_LOCATION)
                 .build();
         placeRepository.save(place);
         userRepository.updatePlaceById(id, place);

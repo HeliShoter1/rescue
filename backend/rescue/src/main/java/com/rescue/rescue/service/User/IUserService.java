@@ -18,6 +18,7 @@ public interface IUserService {
     UserDto getUserByPhoneNumber(String phoneNumber);
     UserDto createUser(CreateUserRequest userRequest);
     UserDto updateUserStatus(UserUpdateStatus userUpdateStatus);
+    UserDto updateUserStatus(Long userId, UserStatus status);
     UserDto updateUserPassword(UserUpdatePassword userUpdatePassword);
     UserDto updateUserRole(Long userId, UserUpdateRole userUpdateRole);
     UserDto updateUserPlace( CreatePlace placeId);

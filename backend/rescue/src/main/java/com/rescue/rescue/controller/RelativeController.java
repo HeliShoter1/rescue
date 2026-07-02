@@ -51,13 +51,13 @@ public class RelativeController {
         return ResponseEntity.ok(new ApiResponse("success", null));
     }
 
-    @PutMapping("/updateRelative/{id}/user")
+    @PutMapping("/updateRelative/user")
     public ResponseEntity<ApiResponse> updateRelative(@RequestBody UpdateRelativeStatus updateStatus) {
         relativeService.updateStatusRelative(updateStatus.getUserId(), updateStatus.getStatus());
         return ResponseEntity.ok(new ApiResponse("success", null));
     }
 
-    @PutMapping("/updateRelative/{id}/Relative")
+    @PutMapping("/updateRelative/Relative")
     public ResponseEntity<ApiResponse> updateRelativeById(@RequestBody UpdateRelativeStatus updateStatus) {
         relativeService.updateStatusRelative(updateStatus.getRelativeId(), updateStatus.getStatus());
         return ResponseEntity.ok(new ApiResponse("success", null));

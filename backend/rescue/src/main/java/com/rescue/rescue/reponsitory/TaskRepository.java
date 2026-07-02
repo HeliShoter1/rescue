@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import com.rescue.rescue.enums.TaskStatus;
 import com.rescue.rescue.model.Task;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -43,5 +44,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     """)
     void RegisterTask(Long userId, Long taskId);
     
-    
+    @Query(value = """
+        SELECT AVG(EXTRACT(EPOCH FROM (t.complete_at - t.create_at)) / 60)
+        FROM task t
+        WHERE t.status = 'COMPLETED' AND t.complete_at IS NOT NULL
+        """, nativeQuery = true)
+    Double findAvgCompletionMinutesNative();
+
+    @Query("""
+        SELECT COUNT(t)
+        FROM Task t
+        WHERE t.status = :status
+            """)
+    Integer countByStatus(TaskStatus status);
+
 }

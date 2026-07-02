@@ -19,6 +19,8 @@ import com.rescue.rescue.service.Task.ITaskServide;
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("${api.prefix}/tasks")
@@ -42,6 +44,12 @@ public class TaskController {
         return ResponseEntity.ok(new ApiResponse("success", taskService.getTaskByRescueTeamId(rescueId)));
     }
 
+    @GetMapping("/stats")
+    public ResponseEntity<ApiResponse> getTaskStats() {
+        return ResponseEntity.ok(new ApiResponse("success", taskService.getStats()));
+    }
+    
+
     @PostMapping("/{taskId}/register")
     public ResponseEntity<ApiResponse> registerTask(@PathVariable Long taskId) {
         taskService.registerTask(taskId);
@@ -58,5 +66,6 @@ public class TaskController {
     public ResponseEntity<ApiResponse> updateTaskStatus(@PathVariable Long taskId, @RequestBody UpdateTaskStatus status) {
         return ResponseEntity.ok(new ApiResponse("success", taskService.updateTaskStatus(taskId, status.getTaskStatus())));
     }
+    
     
 }

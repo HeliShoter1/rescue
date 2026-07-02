@@ -2,11 +2,16 @@ package com.rescue.rescue.service.Task;
 
 import java.util.List;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.rescue.rescue.Event.TaskStatusChangedEvent;
 import com.rescue.rescue.dto.TaskDto;
+import com.rescue.rescue.dto.TaskStatsDTO;
 import com.rescue.rescue.enums.TaskStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Task;
@@ -29,6 +34,8 @@ public class TaskService  implements ITaskServide {
     private final RescueTeamRepository rescueTeamRepository;
 
     private final UserReponsitory userRepository;
+
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public TaskDto getTaskById(Long taskId) {
@@ -65,6 +72,27 @@ public class TaskService  implements ITaskServide {
         return TaskDto.fromEntity(taskRepository.save(task));
     }
 
+    public TaskStatsDTO getStats() {
+        long completed = taskRepository.countByStatus(TaskStatus.COMPLETED);
+        long inProgress = taskRepository.countByStatus(TaskStatus.AGIND);
+        long pending = taskRepository.countByStatus(TaskStatus.PENDING);
+        Double avgMinutes = taskRepository.findAvgCompletionMinutesNative();
+
+        return TaskStatsDTO.builder()
+                .completedCount(completed)
+                .inProgressCount(inProgress)
+                .pendingCount(pending)
+                .avgCompletionMinutes(avgMinutes)
+                .build();
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onTaskStatusChanged(TaskStatusChangedEvent event) {
+        TaskStatsDTO stats = getStats();
+        // Push tới tất cả client đang subscribe kênh thống kê
+        messagingTemplate.convertAndSend("/topic/dashboard/stats", stats);
+    }
+
     @Override
     public TaskDto updateTaskStatus(Long taskId, TaskStatus status) {
         Authentication authentication ;
@@ -80,7 +108,11 @@ public class TaskService  implements ITaskServide {
         if (task.getUser() == null || !task.getUser().getId().equals(userId)) {
             throw new RuntimeException("You are not authorized to update this task");
         }
+        if (status == TaskStatus.COMPLETED) {
+            task.setCompleteAt(java.time.LocalDateTime.now());
+        }
         task.setStatus(status);
+        task.setUpdateAt(java.time.LocalDateTime.now());
         return TaskDto.fromEntity(taskRepository.save(task));
     }
 
