@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.User;
 
@@ -24,4 +25,24 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     @Query("select g.user from Group g join User u on g.user.id = u.id where u.role = 'MANAGER' and g.rescueTeam.id = :rescueTeamId")
     User findManagerByRescueTeamId(@Param("rescueTeamId") Long rescueTeamId);
+
+    @Query("select g from Group g where g.user.id = :userId")
+    Group findMemberByUserId(Long userId);
+
+    @Query("select g from Group g where g.rescueTeam.id = :rescueTeamId and g.status = :status and g.id > :cursor order by g.id asc limit :limit")
+    List<Group> findByRescueTeamIdAndStatus(
+        @Param("rescueTeamId") Long rescueTeamId,
+        @Param("status") MemberStatus status,
+        @Param("cursor") Long cursor,
+        @Param("limit") Integer limit
+    );
+
+    @Query("select g from Group g where g.rescueTeam.post.id = :postId and g.status = :status and g.id > :cursor order by g.id asc limit :limit")
+    List<Group> findByPostIdAndStatus(
+        @Param("postId") Long postId,
+        @Param("status") MemberStatus status,
+        @Param("cursor") Long cursor,
+        @Param("limit") Integer limit
+    );
+
 }

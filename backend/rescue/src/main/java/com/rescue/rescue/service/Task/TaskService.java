@@ -12,14 +12,19 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import com.rescue.rescue.Event.TaskStatusChangedEvent;
 import com.rescue.rescue.dto.TaskDto;
 import com.rescue.rescue.dto.TaskStatsDTO;
+import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.enums.TaskStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
+import com.rescue.rescue.model.Group;
+import com.rescue.rescue.model.RescueTeam;
 import com.rescue.rescue.model.Task;
+import com.rescue.rescue.reponsitory.GroupRepository;
 import com.rescue.rescue.reponsitory.RescueTeamRepository;
 import com.rescue.rescue.reponsitory.TaskRepository;
 import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreateTask;
 import com.rescue.rescue.sercurity.user.RescueUserDetail;
+import com.rescue.rescue.service.Group.IGroupService;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -36,6 +41,8 @@ public class TaskService  implements ITaskServide {
     private final UserReponsitory userRepository;
 
     private final SimpMessagingTemplate messagingTemplate;
+
+    private final GroupRepository groupRepository;
 
     @Override
     public TaskDto getTaskById(Long taskId) {
@@ -57,6 +64,10 @@ public class TaskService  implements ITaskServide {
                 .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
         if (task.getUser() != null) {
             throw new RuntimeException("Task is already registered by another user");
+        }
+        Group group = groupRepository.findMemberByUserId(userId);
+        if(group == null || group.getStatus() != MemberStatus.ACCEPTED) {
+            throw new RuntimeException("You are not accepted in the rescue team");
         }
         taskRepository.RegisterTask(userId, taskId);
     }

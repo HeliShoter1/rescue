@@ -42,6 +42,16 @@ public class GroupService implements IGroupService {
 
 
     @Override
+    public List<Group> getMemberByRescueTeamIdAndStatus(Long rescueTeamId, MemberStatus status, Long cursor, Integer limit){
+        return groupRepository.findByRescueTeamIdAndStatus(rescueTeamId, status, cursor, limit);
+    }
+
+    @Override
+    public List<Group> getMemberByPostIdAndStatus(Long postId, MemberStatus status, Long cursor, Integer limit){
+        return groupRepository.findByPostIdAndStatus(postId, status, cursor, limit);
+    }
+
+    @Override
     public UserDto AcceptUserToRescueTeam(Long rescueTeamId, Long userId, MemberStatus status) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -51,7 +61,7 @@ public class GroupService implements IGroupService {
         Group group = Group.builder()
                 .user(user)
                 .rescueTeam(rescueTeam)
-                .status(status)
+                .status(MemberStatus.ACCEPTED)
                 .build();
 
         groupRepository.save(group);
@@ -76,11 +86,12 @@ public class GroupService implements IGroupService {
         Group group = Group.builder()
                 .user(user)
                 .rescueTeam(rescueTeam)
+                .status(MemberStatus.PENDING)
                 .build();
 
         groupRepository.save(group);
         User manager = groupRepository.findManagerByRescueTeamId(rescueTeam.getId());
-        notificationService.sendViaQueue(manager.getId(), userId, "Thêm thành viên", user.getName() + " đã tham gia đội cứu hộ");
+        notificationService.sendViaQueue(manager.getId(), userId, "Có thành viên đăng ký", user.getName() + " đã đăng ký tham gia đội cứu hộ");
         return UserDto.fromEntity(user);
     }
 
