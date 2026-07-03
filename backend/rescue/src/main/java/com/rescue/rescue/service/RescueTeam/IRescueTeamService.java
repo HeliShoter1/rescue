@@ -14,6 +14,7 @@ public interface IRescueTeamService {
     RescueTeamDto getRescueTeamByPostId(Long postId);
     List<RescueTeamDto> getAllRescueTeam(Long cursor, Long limit);
     List<RescueTeamDto> getAllRescueTeamsByStatus(RescueTeamStatus status, Long cursor, Integer limit );
+    void assignRescueTeamToPost(Long rescueTeamId, Long postId);
     RescueTeamDto createRescueTeam(CreateRescueTeamRequest request);
     void updateRescueTeam(UpdateRescueTeamRequest request);
     

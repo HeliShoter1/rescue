@@ -19,8 +19,9 @@ public interface IUserService {
     UserDto createUser(CreateUserRequest userRequest);
     UserDto updateUserStatus(UserUpdateStatus userUpdateStatus);
     UserDto updateUserStatus(Long userId, UserStatus status);
+    void assignManagerToRescueTeam(Long userId, Long rescueTeamId);
     UserDto updateUserPassword(UserUpdatePassword userUpdatePassword);
     UserDto updateUserRole(Long userId, UserUpdateRole userUpdateRole);
     UserDto updateUserPlace( CreatePlace placeId);
-    UserDto convertDto(User user);
+    UserDto convertDto(User user);  
 }

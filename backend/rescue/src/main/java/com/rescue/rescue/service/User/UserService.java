@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.PlaceDto;
 import com.rescue.rescue.dto.UserDto;
+import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.enums.PostStatus;
 import com.rescue.rescue.enums.TypePlace;
 import com.rescue.rescue.enums.UserRole;
@@ -18,11 +19,15 @@ import com.rescue.rescue.enums.UserStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.exceptions.UserAlreadyExistsException;
 import com.rescue.rescue.exceptions.UserNotFoundException;
+import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.Place;
 import com.rescue.rescue.model.Post;
+import com.rescue.rescue.model.RescueTeam;
 import com.rescue.rescue.model.User;
+import com.rescue.rescue.reponsitory.GroupRepository;
 import com.rescue.rescue.reponsitory.PlaceRepository;
 import com.rescue.rescue.reponsitory.PostRepository;
+import com.rescue.rescue.reponsitory.RescueTeamRepository;
 import com.rescue.rescue.reponsitory.UserReponsitory;
 import com.rescue.rescue.request.CreatePlace;
 import com.rescue.rescue.request.CreateUserRequest;
@@ -46,6 +51,8 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
     private final NotificationService notificationService;
+    private final RescueTeamRepository rescueTeamRepository;
+    private final GroupRepository groupRepository;
 
     @Override
     public List<UserDto> getAllUsers(UserStatus status, UserRole role, String search, Long cursor, Integer limit) {
@@ -57,6 +64,23 @@ public class UserService implements IUserService {
             limit != null ? limit : 10
         );
         return users.stream().map(this::convertDto).toList();
+    }
+
+    @Override
+    public void assignManagerToRescueTeam(Long userId, Long rescueTeamId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        if (user.getRole() != UserRole.MANAGER) {
+            throw new IllegalArgumentException("User is not a manager");
+        }
+        RescueTeam rescueTeam = rescueTeamRepository.findById(rescueTeamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rescue team not found with id: " + rescueTeamId));
+        Group group = new Group().builder()
+                .user(user)
+                .rescueTeam(rescueTeam)
+                .status(MemberStatus.ACCEPTED)
+                .build();
+        groupRepository.save(group);
     }
 
 
@@ -102,15 +126,20 @@ public class UserService implements IUserService {
         Post post = Post.builder()
                 .user(user)
                 .content("User " + user.getName() + " has changed status to " + userUpdateStatus.getStatus())
-                .status(PostStatus.PENDING)
                 .build();
-        postRepository.save(post);
-        if(user.getStatus().equals(UserStatus.EMERGENCY)){
-            List<User> admin = userRepository.findByRole(UserRole.ADMIN);
-            for(User u: admin){
-                notificationService.sendViaQueue(u.getId(), id, "User EMERGENCY", "User " + user.getName() + " has status to EMERGENCY");
+        if(user.getStatus().equals(UserStatus.SAFE)){
+            post.setStatus(PostStatus.RESOLVED);
+        }else{
+            post.setStatus(PostStatus.PENDING);
+            if(user.getStatus().equals(UserStatus.EMERGENCY)){
+                List<User> admin = userRepository.findByRole(UserRole.ADMIN);
+                for(User u: admin){
+                    notificationService.sendViaQueue(u.getId(), id, "User EMERGENCY", "User " + user.getName() + " has status to EMERGENCY");
+                }
             }
         }
+        
+        postRepository.save(post);
         return this.convertDto(user);
     }
 

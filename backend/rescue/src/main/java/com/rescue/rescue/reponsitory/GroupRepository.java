@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -45,4 +46,13 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
         @Param("limit") Integer limit
     );
 
+    @Modifying
+    @Query("""
+            Update Group g set g.status = :status where g.user.id = :userId and g.rescueTeam.id = :rescueTeamId
+            """)
+    void updateMemberStatus(
+        @Param("userId") Long userId,
+        @Param("rescueTeamId") Long rescueTeamId,
+        @Param("status") MemberStatus status
+    );
 }

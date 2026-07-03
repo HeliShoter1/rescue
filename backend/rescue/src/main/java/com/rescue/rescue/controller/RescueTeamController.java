@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-
-
 @RestController
 @RequestMapping("${api.prefix}/rescue-teams")
 @AllArgsConstructor
@@ -66,6 +64,13 @@ public class RescueTeamController {
         //TODO: process PUT request
         rescueTeamService.updateRescueTeam(entity);
         return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PostMapping("/{rescueTeamId}/assign/{postId}")
+    public ResponseEntity<ApiResponse> assignRescueTeamToPost(@PathVariable Long rescueTeamId, @PathVariable Long postId) {
+        rescueTeamService.assignRescueTeamToPost(rescueTeamId, postId);
+        return ResponseEntity.ok(new ApiResponse("Rescue team assigned to post successfully", null));
     }
     
     

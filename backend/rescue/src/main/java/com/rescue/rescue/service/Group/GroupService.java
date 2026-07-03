@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.rescue.rescue.dto.GroupDto;
 import com.rescue.rescue.dto.UserDto;
 import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
@@ -42,29 +43,28 @@ public class GroupService implements IGroupService {
 
 
     @Override
-    public List<Group> getMemberByRescueTeamIdAndStatus(Long rescueTeamId, MemberStatus status, Long cursor, Integer limit){
-        return groupRepository.findByRescueTeamIdAndStatus(rescueTeamId, status, cursor, limit);
+    public List<GroupDto> getMemberByRescueTeamIdAndStatus(Long rescueTeamId, MemberStatus status, Long cursor, Integer limit){
+        return groupRepository.findByRescueTeamIdAndStatus(rescueTeamId, status, cursor, limit)
+                .stream()
+                .map(GroupDto::fromEntity)
+                .toList();
     }
 
     @Override
-    public List<Group> getMemberByPostIdAndStatus(Long postId, MemberStatus status, Long cursor, Integer limit){
-        return groupRepository.findByPostIdAndStatus(postId, status, cursor, limit);
+    public List<GroupDto> getMemberByPostIdAndStatus(Long postId, MemberStatus status, Long cursor, Integer limit){
+        return groupRepository.findByPostIdAndStatus(postId, status, cursor, limit)
+                .stream()
+                .map(GroupDto::fromEntity)
+                .toList();
     }
 
     @Override
-    public UserDto AcceptUserToRescueTeam(Long rescueTeamId, Long userId, MemberStatus status) {
+    public UserDto AcceptUserToRescueTeam(Long rescueTeamId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         RescueTeam rescueTeam = rescueTeamRepository.findById(rescueTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException("RescueTeam not found"));
-
-        Group group = Group.builder()
-                .user(user)
-                .rescueTeam(rescueTeam)
-                .status(MemberStatus.ACCEPTED)
-                .build();
-
-        groupRepository.save(group);
+        groupRepository.updateMemberStatus(userId, rescueTeamId, MemberStatus.ACCEPTED);
         return UserDto.fromEntity(user);
     }
 
@@ -100,8 +100,7 @@ public class GroupService implements IGroupService {
         Group group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
         User manager = groupRepository.findManagerByRescueTeamId(group.getRescueTeam().getId());
-        group.setStatus(MemberStatus.DELETED);
-        groupRepository.save(group);
+        groupRepository.updateMemberStatus(userId, rescueTeamId, MemberStatus.DELETED);
         notificationService.sendViaQueue(manager.getId(), userId, "Xóa thành viên", group.getUser().getName() + " đã rời khỏi đội cứu hộ");
         return UserDto.fromEntity(group.getUser());
     }

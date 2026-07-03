@@ -57,6 +57,13 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse("success", userDto));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/user/{user_id}/rescue-teams/{rescue_team_id}/assign-manager")
+    public ResponseEntity<ApiResponse> assignManagerToRescueTeam(@PathVariable("user_id") Long userId, @PathVariable("rescue_team_id") Long rescueTeamId) {
+        userService.assignManagerToRescueTeam(userId, rescueTeamId);
+        return ResponseEntity.ok(new ApiResponse("success", null));
+    }
+
     @PutMapping("/update/status")
     public ResponseEntity<ApiResponse> updateUserStatus(@RequestBody UserUpdateStatus userUpdate) {
         UserDto userDto = userService.updateUserStatus(userUpdate);

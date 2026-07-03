@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.reponse.ApiResponse;
 import com.rescue.rescue.service.Group.IGroupService;
 
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.Delegate;
 
@@ -27,54 +29,55 @@ public class GroupController {
 
     @GetMapping("/rescue-teams/{rescueTeamId}/users")
     public ResponseEntity<ApiResponse> getUsersByRescueTeamId(
-                                        @PathVariable String rescueTeamId) {
+                                        @PathVariable String rescueTeamId,
+                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit
+                                    ) {
         // Implementation for fetching users by rescue team ID
-        return ResponseEntity.ok(new ApiResponse("Users fetched successfully", groupService.getUsersByRescueTeamId(Long.parseLong(rescueTeamId), null, null)));
+        return ResponseEntity.ok(new ApiResponse("Users fetched successfully", groupService.getUsersByRescueTeamId(Long.parseLong(rescueTeamId), cursor, limit)));
     }
 
 
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping("/rescue-teams/{rescueTeamId}/users/{userId}/add-user")
     public ResponseEntity<ApiResponse> AcceptUserToRescueTeam(
-                                        @RequestBody String rescueTeamId, @RequestBody String userId, @RequestBody MemberStatus status) {
-        return ResponseEntity.ok(new ApiResponse("User added to rescue team successfully", groupService.AcceptUserToRescueTeam(Long.parseLong(rescueTeamId), Long.parseLong(userId), status)));
+                                        @PathVariable String rescueTeamId, @PathVariable String userId) {
+        return ResponseEntity.ok(new ApiResponse("User added to rescue team successfully", groupService.AcceptUserToRescueTeam(Long.parseLong(rescueTeamId), Long.parseLong(userId))));
     }
 
     @PreAuthorize("hasAuthority('MANAGER')")
-    @GetMapping("/rescue-teams/{rescueTeamId}/members/registered")
+    @GetMapping("/rescue-teams/rescueteams/{rescueTeamId}/registered")
     public ResponseEntity<ApiResponse> getRegisteredMembersByRescueTeamId(
                                         @PathVariable String rescueTeamId,
-                                        @PathVariable Long cursor, 
-                                        @PathVariable Integer limit) {
+                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit) {
         return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByRescueTeamIdAndStatus(Long.parseLong(rescueTeamId), MemberStatus.PENDING, cursor, limit)));
     }
 
     
     @PreAuthorize("hasAuthority('MANAGER')")
-    @GetMapping("/rescue-teams/{rescueTeamId}/members/registered")
+    @GetMapping("/rescue-teams/posts/{postId}/registered")
     public ResponseEntity<ApiResponse> getRegisteredMembersByPostId(
                                         @PathVariable String postId,
-                                        @PathVariable Long cursor, 
-                                        @PathVariable Integer limit) {
+                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit) {
         return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByRescueTeamIdAndStatus(Long.parseLong(postId), MemberStatus.PENDING, cursor, limit)));
     }
 
-    @PreAuthorize("hasAuthority('MANAGER')")
-    @GetMapping("/rescue-teams/{rescueTeamId}/members/registered")
+    @GetMapping("/rescue-teams/rescueteams/{rescueTeamId}/members/registered")
     public ResponseEntity<ApiResponse> getMembersByRescueTeamId(
                                         @PathVariable String rescueTeamId,
-                                        @PathVariable Long cursor, 
-                                        @PathVariable Integer limit) {
+                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10")    Integer limit) {
         return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByRescueTeamIdAndStatus(Long.parseLong(rescueTeamId), MemberStatus.ACCEPTED, cursor, limit)));
     }
 
-    @PreAuthorize("hasAuthority('MANAGER')")
-    @GetMapping("/rescue-teams/{rescueTeamId}/members/registered")
+    @GetMapping("/rescue-teams/posts/{postId}/members/registered")
     public ResponseEntity<ApiResponse> getMembersByPostId(
                                         @PathVariable String postId,
-                                        @PathVariable Long cursor, 
-                                        @PathVariable Integer limit) {
-        return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByRescueTeamIdAndStatus(Long.parseLong(postId), MemberStatus.ACCEPTED, cursor, limit)));
+                                        @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
+                                        @RequestParam(value = "limit", required = false, defaultValue = "10")    Integer limit) {
+        return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByPostIdAndStatus(Long.parseLong(postId), MemberStatus.ACCEPTED, cursor, limit)));
     }
 
     @PostMapping("/post/{postId}/add-user")

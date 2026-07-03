@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.rescue.rescue.dto.RescueTeamDto;
+import com.rescue.rescue.enums.PostStatus;
 import com.rescue.rescue.enums.RescueTeamStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
 import com.rescue.rescue.model.Post;
@@ -57,6 +58,18 @@ public class RescueTeamService implements IRescueTeamService {
                 .stream()
                 .map(RescueTeamDto::fromEntity)
                 .toList();
+    }
+
+    @Override
+    public void assignRescueTeamToPost(Long rescueTeamId, Long postId) {
+        RescueTeam rescueTeam = rescueTeamRepository.findById(rescueTeamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rescue team not found with id: " + rescueTeamId));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        rescueTeam.setPost(post);
+        rescueTeam.setStatus(RescueTeamStatus.ON_MISSION);
+        post.setStatus(PostStatus.ASSIGNED);
+        rescueTeamRepository.save(rescueTeam);
     }
 
     @Override
