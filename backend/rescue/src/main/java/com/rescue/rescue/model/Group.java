@@ -26,6 +26,7 @@ public class Group {
     @JoinColumn(name = "rescue_id", nullable = false)
     private RescueTeam rescueTeam;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @Builder.Default
     private MemberStatus status = MemberStatus.PENDING;

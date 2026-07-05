@@ -38,6 +38,11 @@ public class PlaceController {
         return ResponseEntity.ok(new ApiResponse("Place created", placeDto));
     }
     
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAllPlaces() {
+        return ResponseEntity.ok(new ApiResponse("All places found", placeService.getAllPlaces()));
+    }
+    
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<ApiResponse> deletePlaceById(@PathVariable Long id) {
         placeService.deletePlaceById(id);

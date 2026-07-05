@@ -33,14 +33,14 @@ public class RescueTeamService implements IRescueTeamService {
     @Override
     public RescueTeamDto getRescueTeamById(Long id) {
         RescueTeam rescueTeam = rescueTeamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rescue team not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Rescue team", id));
         return RescueTeamDto.fromEntity(rescueTeam);
     }
 
     @Override
     public RescueTeamDto getRescueTeamByPostId(Long postId) {
         RescueTeam rescueTeam = rescueTeamRepository.findByPostId(postId)
-                .orElseThrow(() -> new RuntimeException("Rescue team not found with post id: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("Rescue team not found with post id: " + postId));
         return RescueTeamDto.fromEntity(rescueTeam);
     }
 
@@ -95,7 +95,7 @@ public class RescueTeamService implements IRescueTeamService {
             throw new ResourceNotFoundException("User not found");
         }
         RescueTeam rescueTeam = rescueTeamRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("Rescue team not found with id: " + request.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Rescue team", request.getId()));
         rescueTeam.setStatus(request.getStatus());
         rescueTeamRepository.save(rescueTeam);
     }

@@ -64,11 +64,18 @@ public class RelativeService implements IRelativeService {
         User relativeUser = userRepository.findById(relativeDto.getRelativeId())
                 .orElseThrow(() -> new UsernameNotFoundException("Relative user not found"));
 
-        Relative relative = Relative.builder()
-                .user(user)
-                .relative(relativeUser)
-                .relationship(RelationshipType.valueOf(relativeDto.getRelationship()))
-                .build();
+        List<Relative> existing = relativeRepository.findByRelativeIdAndUserId(relativeDto.getRelativeId(), userId);
+        Relative relative;
+        if (existing != null && !existing.isEmpty()) {
+            relative = existing.get(0);
+            relative.setRelationship(RelationshipType.fromString(relativeDto.getRelationship()));
+        } else {
+            relative = Relative.builder()
+                    .user(user)
+                    .relative(relativeUser)
+                    .relationship(RelationshipType.fromString(relativeDto.getRelationship()))
+                    .build();
+        }
 
         RelativeDto saved = RelativeDto.fromEntity(relativeRepository.save(relative));
 
@@ -125,8 +132,11 @@ public class RelativeService implements IRelativeService {
         } catch (Exception e) {
             throw new ResourceNotFoundException("User not found");
         }
-        Relative relative = relativeRepository.findByRelativeIdAndUserId(relativeId, userId)
-                .orElseThrow(() -> new UsernameNotFoundException("Relative not found with id: " + relativeId));
+        List<Relative> relatives = relativeRepository.findByRelativeIdAndUserId(relativeId, userId);
+        if (relatives == null || relatives.isEmpty()) {
+            throw new UsernameNotFoundException("Relative not found with id: " + relativeId);
+        }
+        Relative relative = relatives.get(0);
         User user = relative.getRelative();
         userService.updateUserStatus(user.getId(), status);
         userRepository.save(user);

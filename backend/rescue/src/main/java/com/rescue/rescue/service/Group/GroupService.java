@@ -90,8 +90,11 @@ public class GroupService implements IGroupService {
                 .build();
 
         groupRepository.save(group);
-        User manager = groupRepository.findManagerByRescueTeamId(rescueTeam.getId());
-        notificationService.sendViaQueue(manager.getId(), userId, "Có thành viên đăng ký", user.getName() + " đã đăng ký tham gia đội cứu hộ");
+        List<User> managers = groupRepository.findManagerByRescueTeamId(rescueTeam.getId());
+        if (managers != null && !managers.isEmpty()) {
+            User manager = managers.get(0);
+            notificationService.sendViaQueue(manager.getId(), userId, "Có thành viên đăng ký", user.getName() + " đã đăng ký tham gia đội cứu hộ");
+        }
         return UserDto.fromEntity(user);
     }
 
@@ -99,9 +102,12 @@ public class GroupService implements IGroupService {
     public UserDto removeUserFromRescueTeam(Long userId, Long rescueTeamId) {
         Group group = groupRepository.findByUserIdAndRescueTeamId(userId, rescueTeamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
-        User manager = groupRepository.findManagerByRescueTeamId(group.getRescueTeam().getId());
+        List<User> managers = groupRepository.findManagerByRescueTeamId(group.getRescueTeam().getId());
         groupRepository.updateMemberStatus(userId, rescueTeamId, MemberStatus.DELETED);
-        notificationService.sendViaQueue(manager.getId(), userId, "Xóa thành viên", group.getUser().getName() + " đã rời khỏi đội cứu hộ");
+        if (managers != null && !managers.isEmpty()) {
+            User manager = managers.get(0);
+            notificationService.sendViaQueue(manager.getId(), userId, "Xóa thành viên", group.getUser().getName() + " đã rời khỏi đội cứu hộ");
+        }
         return UserDto.fromEntity(group.getUser());
     }
 }

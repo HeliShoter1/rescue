@@ -35,7 +35,7 @@ public class RelativeController {
     public ResponseEntity<ApiResponse> getAllRelative(
         @RequestParam(value = "cursor",defaultValue = "0") Long Cursor,
         @RequestParam(value = "limit",defaultValue = "10") Integer limit) {
-        List<RelativeDto> relatives = relativeService.getRelativesByUserId(0L, 10);
+        List<RelativeDto> relatives = relativeService.getRelativesByUserId(Cursor, limit);
         return ResponseEntity.ok(new ApiResponse("success", relatives));
     }
 

@@ -38,14 +38,14 @@ public class GroupController {
     }
 
 
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @PostMapping("/rescue-teams/{rescueTeamId}/users/{userId}/add-user")
     public ResponseEntity<ApiResponse> AcceptUserToRescueTeam(
                                         @PathVariable String rescueTeamId, @PathVariable String userId) {
         return ResponseEntity.ok(new ApiResponse("User added to rescue team successfully", groupService.AcceptUserToRescueTeam(Long.parseLong(rescueTeamId), Long.parseLong(userId))));
     }
 
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @GetMapping("/rescue-teams/rescueteams/{rescueTeamId}/registered")
     public ResponseEntity<ApiResponse> getRegisteredMembersByRescueTeamId(
                                         @PathVariable String rescueTeamId,
@@ -55,13 +55,13 @@ public class GroupController {
     }
 
     
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @GetMapping("/rescue-teams/posts/{postId}/registered")
     public ResponseEntity<ApiResponse> getRegisteredMembersByPostId(
                                         @PathVariable String postId,
                                         @RequestParam(value = "cursor", required = false, defaultValue = "0") Long cursor,
                                         @RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit) {
-        return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByRescueTeamIdAndStatus(Long.parseLong(postId), MemberStatus.PENDING, cursor, limit)));
+        return ResponseEntity.ok(new ApiResponse("Registered members fetched successfully", groupService.getMemberByPostIdAndStatus(Long.parseLong(postId), MemberStatus.PENDING, cursor, limit)));
     }
 
     @GetMapping("/rescue-teams/rescueteams/{rescueTeamId}/members/registered")
@@ -86,7 +86,7 @@ public class GroupController {
         return ResponseEntity.ok(new ApiResponse("User registered to rescue team successfully", groupService.addUserToRescueTeamByPost(Long.parseLong(postId))));
     }
 
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @DeleteMapping("/rescue-teams/{rescueTeamId}/users/{userId}")
     public ResponseEntity<ApiResponse> removeUserFromRescueTeam(
                                         @PathVariable String rescueTeamId,

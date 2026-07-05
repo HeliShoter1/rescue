@@ -1,7 +1,6 @@
 package com.rescue.rescue.reponsitory;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,6 +30,6 @@ public interface RelativeReponsitory extends JpaRepository<Relative, Long>  {
         WHERE r.relative.id = :relativeId
         AND r.user.id = :userId
     """)
-    Optional<Relative> findByRelativeIdAndUserId(@Param("relativeId") Long relativeId, @Param("userId") Long userId);
+    List<Relative> findByRelativeIdAndUserId(@Param("relativeId") Long relativeId, @Param("userId") Long userId);
 
 }   

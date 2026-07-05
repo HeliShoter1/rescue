@@ -34,6 +34,7 @@ public class Place {
 
     @OneToOne(mappedBy = "place", fetch = FetchType.LAZY)
     @Nullable
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @Enumerated(EnumType.STRING)

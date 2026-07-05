@@ -25,7 +25,7 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     );
 
     @Query("select g.user from Group g join User u on g.user.id = u.id where u.role = 'MANAGER' and g.rescueTeam.id = :rescueTeamId")
-    User findManagerByRescueTeamId(@Param("rescueTeamId") Long rescueTeamId);
+    List<User> findManagerByRescueTeamId(@Param("rescueTeamId") Long rescueTeamId);
 
     @Query("select g from Group g where g.user.id = :userId")
     Group findMemberByUserId(Long userId);

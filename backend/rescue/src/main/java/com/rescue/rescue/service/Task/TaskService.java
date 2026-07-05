@@ -15,6 +15,8 @@ import com.rescue.rescue.dto.TaskStatsDTO;
 import com.rescue.rescue.enums.MemberStatus;
 import com.rescue.rescue.enums.TaskStatus;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
+import com.rescue.rescue.exceptions.StatusConflictException;
+import com.rescue.rescue.exceptions.OperationNotAllowedException;
 import com.rescue.rescue.model.Group;
 import com.rescue.rescue.model.RescueTeam;
 import com.rescue.rescue.model.Task;
@@ -47,7 +49,7 @@ public class TaskService  implements ITaskServide {
     @Override
     public TaskDto getTaskById(Long taskId) {
         return TaskDto.fromEntity(taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId)));
+                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId)));
     }
 
     @Override
@@ -61,13 +63,13 @@ public class TaskService  implements ITaskServide {
             throw new ResourceNotFoundException("User not found");
         }
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
         if (task.getUser() != null) {
-            throw new RuntimeException("Task is already registered by another user");
+            throw new StatusConflictException("Task is already registered by another user");
         }
         Group group = groupRepository.findMemberByUserId(userId);
         if(group == null || group.getStatus() != MemberStatus.ACCEPTED) {
-            throw new RuntimeException("You are not accepted in the rescue team");
+            throw new OperationNotAllowedException("You are not accepted in the rescue team");
         }
         taskRepository.RegisterTask(userId, taskId);
     }
@@ -115,9 +117,9 @@ public class TaskService  implements ITaskServide {
             throw new ResourceNotFoundException("User not found");
         }
         Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new ResourceNotFoundException("Task", taskId));
         if (task.getUser() == null || !task.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You are not authorized to update this task");
+            throw new OperationNotAllowedException("You are not authorized to update this task");
         }
         if (status == TaskStatus.COMPLETED) {
             task.setCompleteAt(java.time.LocalDateTime.now());

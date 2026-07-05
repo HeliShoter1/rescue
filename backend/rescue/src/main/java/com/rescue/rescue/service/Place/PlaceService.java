@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.rescue.rescue.dto.PlaceDto;
 import com.rescue.rescue.enums.TypePlace;
 import com.rescue.rescue.exceptions.ResourceNotFoundException;
+import com.rescue.rescue.exceptions.UserNotFoundException;
 import com.rescue.rescue.model.Place;
 import com.rescue.rescue.model.User;
 import com.rescue.rescue.reponsitory.PlaceRepository;
@@ -36,7 +37,7 @@ public class PlaceService implements IPlaceService {
 
     @Override
     public PlaceDto getPlaceById(Long id) {
-        Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
+        Place place = placeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Place", id));
         return PlaceDto.fromEntity(place);
     }
 
@@ -88,7 +89,7 @@ public class PlaceService implements IPlaceService {
 
     @Override
     public void deletePlaceById(Long id) {
-        Place place = placeRepository.findById(id).orElseThrow(() -> new RuntimeException("Place not found"));
+        Place place = placeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Place", id));
          Authentication authentication ;
         Long userId;
         try {
@@ -97,7 +98,7 @@ public class PlaceService implements IPlaceService {
         } catch (Exception e) {
             throw new ResourceNotFoundException("User not found");
         }
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         if (user.getPlace() == null || !user.getPlace().getId().equals(id) ) {
             throw new SecurityException("You do not have permission to delete this place");
         }

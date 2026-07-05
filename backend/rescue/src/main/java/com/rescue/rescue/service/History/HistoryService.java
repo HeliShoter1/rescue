@@ -84,7 +84,7 @@ public class HistoryService implements IHistoryService {
     public HistoryDto UpdateStatus(Long id, HistoryStatus status) {
         // TODO Auto-generated method stub
         History history = historyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("History not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("History", id));
         history.setStatus(status);
         History savedHistory = historyRepository.save(history);
         return HistoryDto.fromEntity(savedHistory);
