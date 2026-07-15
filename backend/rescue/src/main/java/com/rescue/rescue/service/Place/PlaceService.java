@@ -72,6 +72,24 @@ public class PlaceService implements IPlaceService {
     }
 
     @Override
+    public PlaceDto getPlaceOfUserById() {
+        Authentication authentication ;
+        Long userId;
+        try {
+            authentication = SecurityContextHolder.getContext().getAuthentication();
+            userId = ((RescueUserDetail) authentication.getPrincipal()).getId();
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        Place place = user.getPlace();
+        if (place == null) {
+            throw new ResourceNotFoundException("Place", userId);
+        }
+        return PlaceDto.fromEntity(place);
+    }
+
+    @Override
     public List<PlaceDto> getAllPlaces() {
         List<Place> places = placeRepository.findAll();
         return places.stream().map(PlaceDto::fromEntity).toList();

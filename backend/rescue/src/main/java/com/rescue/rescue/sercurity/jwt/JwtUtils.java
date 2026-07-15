@@ -39,6 +39,7 @@ public class JwtUtils {
                 .setSubject(userPrincipal.getPhoneNumber())
                 .claim("id", userPrincipal.getId())
                 .claim("Role", roles)
+                .claim("Name", userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + this.expirationTime))
                 .signWith(this.key(), SignatureAlgorithm.HS256).compact();

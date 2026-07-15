@@ -55,6 +55,7 @@ public class PostService implements IPostService {
         }
         Post postEntity = Post.builder()
                 .content(post.getContent())
+                .typePost(post.getTypePost())
                 .build();
         User user = userReponsitory.findById(userId).get();
         postEntity.setUser(user);

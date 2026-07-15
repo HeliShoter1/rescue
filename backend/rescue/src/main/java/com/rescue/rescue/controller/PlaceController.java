@@ -31,7 +31,12 @@ public class PlaceController {
     public ResponseEntity<ApiResponse> getMethodName(@PathVariable Long id) {
         return ResponseEntity.ok(new ApiResponse("Place found", placeService.getPlaceById(id)));
     }
-
+    
+    @GetMapping("/user/place")
+    public ResponseEntity<ApiResponse> getPlaceOfUserById() {
+        return ResponseEntity.ok(new ApiResponse("Place found", placeService.getPlaceOfUserById()));
+    }
+    
     @PostMapping("/create-place")
     public ResponseEntity<ApiResponse> postMethodName(@RequestBody CreatePlace entity) {
         PlaceDto placeDto = placeService.createPlace(entity);

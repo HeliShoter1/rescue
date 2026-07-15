@@ -1,5 +1,7 @@
 package com.rescue.rescue.request;
 
+import com.rescue.rescue.enums.TypePost;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,4 +11,5 @@ import lombok.Setter;
 @Setter
 public class CreatePost {
     private String content;
+    private TypePost typePost;
 }

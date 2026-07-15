@@ -3,6 +3,7 @@ package com.rescue.rescue.dto;
 import java.time.LocalDate;
 
 import com.rescue.rescue.enums.PostStatus;
+import com.rescue.rescue.enums.TypePost;
 import com.rescue.rescue.model.Place;
 import com.rescue.rescue.model.Post;
 
@@ -22,6 +23,7 @@ public class PostDto {
     private PostStatus status;
     private LocalDate updateAt;
     private String content;
+    private TypePost typePost;
 
         public static PostDto fromEntity(Post post) {
             return PostDto.builder()
@@ -31,6 +33,7 @@ public class PostDto {
                     .status(post.getStatus())
                     .updateAt(post.getUpdateAt())
                     .content(post.getContent())
+                    .typePost(post.getTypePost())
                     .build();
         }
 }
