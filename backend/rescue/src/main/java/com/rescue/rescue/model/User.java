@@ -64,27 +64,21 @@ public class User {
     private Place place;
 
     @OneToMany(mappedBy = "user")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Post> posts;
 
     @OneToMany(mappedBy = "sender")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Message> sentMessages;
 
     @OneToMany(mappedBy = "receiver")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Message> receivedMessages;
 
     @OneToMany(mappedBy = "user")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Notification> notifications;
 
     @OneToMany(mappedBy = "sender")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Notification> sentNotifications;
 
     @OneToMany(mappedBy = "user")
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Task> tasks;
 
 }

@@ -1,13 +1,22 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-          "type": "java",
-          "name": "RescueApplication",
-          "request": "launch",
-          "mainClass": "com.rescue.rescue.RescueApplication",
-          "projectName": "rescue",
-          "envFile": "${workspaceFolder}/.env"
-      }
-  ]
-  }
+  "version": "0.2.0",
+  "configurations": [
+    {
+        "type": "java",
+        "name": "RescueApplication",
+        "request": "launch",
+        "mainClass": "com.rescue.rescue.RescueApplication",
+        "projectName": "rescue",
+        "envFile": "${workspaceFolder}/.env"
+    },
+    {
+        "type": "java",
+        "name": "Test RescueApplication",
+        "request": "launch",
+        "mainClass": "com.rescue.rescue.RescueApplication",
+        "projectName": "rescue",
+        "envFile": "${workspaceFolder}/.env"
+    }
+    
+    ]
+}

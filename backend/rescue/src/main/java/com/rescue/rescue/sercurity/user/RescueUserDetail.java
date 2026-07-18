@@ -26,6 +26,7 @@ public class RescueUserDetail implements UserDetails{
     private String phoneNumber;
     private String password;
     private UserRole role;
+    private String name;
 
     private Collection<GrantedAuthority> authorities;
 
@@ -38,6 +39,7 @@ public class RescueUserDetail implements UserDetails{
                 user.getPhoneNumber(),
                 user.getPassword(),
                 user.getRole(),
+                user.getName(),
                 authorities);
     }
 
@@ -57,6 +59,10 @@ public class RescueUserDetail implements UserDetails{
     @Override
     public String getPassword() {
         return this.password;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     @Override

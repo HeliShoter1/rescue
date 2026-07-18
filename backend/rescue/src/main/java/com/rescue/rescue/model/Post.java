@@ -46,6 +46,6 @@ public class Post {
     private List<History> histories;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_post", nullable = false)
+    @Column(name = "type_post")
     private TypePost typePost;
 }
