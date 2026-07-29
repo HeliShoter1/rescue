@@ -82,6 +82,9 @@ public class GroupService implements IGroupService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         RescueTeam rescueTeam = rescueTeamRepository.findByPostId(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("RescueTeam not found"));
+        if(user.getId() == rescueTeam.getPost().getUser().getId()) {
+            throw new ResourceNotFoundException("You are the owner of this post");
+        }
 
         Group group = Group.builder()
                 .user(user)

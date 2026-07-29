@@ -33,3 +33,10 @@ build/
 ### VS Code ###
 .vscode/
 **/chroma_db/
+
+# Python
+__pycache__/
+*.pyc
+
+# ChromaDB
+backend/python/chroma_db/

@@ -121,6 +121,9 @@ public class TaskService  implements ITaskServide {
         if (task.getUser() == null || !task.getUser().getId().equals(userId)) {
             throw new OperationNotAllowedException("You are not authorized to update this task");
         }
+        if (task.getStatus() == TaskStatus.COMPLETED) {
+            throw new StatusConflictException("Cannot update a completed task");
+        }
         if (status == TaskStatus.COMPLETED) {
             task.setCompleteAt(java.time.LocalDateTime.now());
         }
